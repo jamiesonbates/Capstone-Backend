@@ -19,7 +19,9 @@
     "supertest": "^3.0.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "knex": "knex",
+    "start": "nodemon server/bin/www"
   },
   "repository": {
     "type": "git",
