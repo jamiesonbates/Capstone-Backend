@@ -1,0 +1,34 @@
+{
+  "name": "awareseattle-backend",
+  "version": "1.0.0",
+  "description": "A web application that enables citizens to track crime nearby via alerts and maps.",
+  "main": "knex.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "knex": "^0.12.7",
+    "nodemon": "^1.11.0",
+    "pg": "^6.1.4"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "supertest": "^3.0.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamiesonbates/Capstone-Backend.git"
+  },
+  "author": "Jamieson Bates <jamiesonbates@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jamiesonbates/Capstone-Backend/issues"
+  },
+  "homepage": "https://github.com/jamiesonbates/Capstone-Backend#readme"
+}
