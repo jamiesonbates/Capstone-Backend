@@ -8,7 +8,7 @@ exports.up = function(knex) {
       .references('id')
       .inTable('users')
       .notNullable()
-      .indeX();
+      .index();
     table
       .integer('offense_type_id')
       .references('id')
