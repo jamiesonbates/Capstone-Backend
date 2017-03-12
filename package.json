@@ -9,13 +9,16 @@
   "dependencies": {
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
+    "humps": "^2.0.0",
     "knex": "^0.12.7",
     "nodemon": "^1.11.0",
-    "pg": "^6.1.4"
+    "pg": "^6.1.4",
+    "request": "^2.81.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
+    "nock": "^9.0.9",
     "supertest": "^3.0.0"
   },
   "scripts": {
