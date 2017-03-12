@@ -7,10 +7,13 @@
     "test": "tests"
   },
   "dependencies": {
+    "axios": "^0.15.3",
     "body-parser": "^1.17.1",
+    "cron": "^1.2.1",
     "express": "^4.15.2",
     "humps": "^2.0.0",
     "knex": "^0.12.7",
+    "moment": "^2.17.1",
     "nodemon": "^1.11.0",
     "pg": "^6.1.4",
     "request": "^2.81.0"
