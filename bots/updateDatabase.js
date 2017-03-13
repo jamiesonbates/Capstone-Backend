@@ -34,7 +34,7 @@ const getMatchingData = function() {
   const now = moment();
   const oneMonthAgo = moment().subtract(1, 'months');
 
-  return knex('reports').whereBetween('date_reported', [oneMonthAgo, now]);
+  return knex('police_reports').whereBetween('date_reported', [oneMonthAgo, now]);
 }
 
 const identifyNewData = function() {
