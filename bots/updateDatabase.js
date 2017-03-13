@@ -48,10 +48,10 @@ const removeDuplicateReports = function(reports) {
     if (!isDuplicate) {
       newReports.push(report);
     }
-  }
+  };
 
   return newReports;
-}
+};
 
 const getDataWithinDateRange = function() {
   const now = moment();
