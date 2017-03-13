@@ -106,6 +106,9 @@ suite('getMatchingData function', () => {
       .then((results) => {
         assert.deepEqual(results.length, reportsForTestDB.length - 1);
         done();
+      })
+      .catch((err) => {
+        done(err);
       });
   });
 });
