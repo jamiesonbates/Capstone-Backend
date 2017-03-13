@@ -117,11 +117,10 @@ suite('getMatchingData function', () => {
 
 suite('removeDuplicateReports function', () => {
   test('removes duplicates in API data', (done) => {
-    removeDuplicateReports(sampleResponse)
-      .then((results) => {
-        assert.isBelow(sampleResponse.length, results.length);
-        done();
-      });
+    const results = removeDuplicateReports(sampleResponse);
+
+    assert.isBelow(results.length, sampleResponse.length);
+    done();
   });
 });
 
