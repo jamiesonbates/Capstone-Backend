@@ -36,6 +36,18 @@ const prepareDataForConsumption = function(reports) {
         delete report.year;
         delete report.occured_date_range_end;
 
+        report.hundred_block = report.hundred_block_location;
+        report.date_occurred = report.occurred_date_or_date_range_start;
+        report.specific_offense_type = report.offense_type;
+        report.specific_offense_code = report.offense_code;
+        report.specific_offense_code_extension = report.offense_code_extension;
+
+        delete report.hundred_block_location;
+        delete report.occurred_date_or_date_range_start;
+        delete report.offense_type;
+        delete report.offense_code;
+        delete report.offense_code_extension;
+
         return report;
       }
     }

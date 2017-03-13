@@ -49,8 +49,8 @@ beforeEach(done => {
         .inTable('offense_types')
         .notNullable()
         .index();
-      table.integer('offense_code');
-      table.integer('offense_code_extension');
+      table.integer('specific_offense_code');
+      table.integer('specific_offense_code_extension');
       table.string('specific_offense_type');
       table.timestamp('date_reported');
       table.timestamp('date_occured');
