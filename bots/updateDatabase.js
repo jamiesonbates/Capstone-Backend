@@ -31,7 +31,7 @@ const filterReports = function(reports) {
 }
 
 const getMatchingData = function() {
-
+  
 }
 
 const identifyNewData = function() {
