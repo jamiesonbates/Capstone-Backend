@@ -17,13 +17,13 @@ exports.up = function(knex) {
     table.integer('specific_offense_code');
     table.integer('specific_offense_code_extension');
     table.string('specific_offense_type');
-    table.timestamp('date_reported');
-    table.timestamp('date_occurred');
+    table.dateTime('date_reported');
+    table.dateTime('date_occurred');
     table
-      .float('latitude')
+      .decimal('latitude', 11, 9)
       .notNullable();
     table
-      .float('longitude')
+      .decimal('longitude', 12, 9)
       .notNullable();
     table.string('hundred_block');
     table.string('district_sector');

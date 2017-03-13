@@ -84,22 +84,25 @@ const getDataWithinDateRange = function() {
 }
 
 const identifyNewDataAndInsert = function(obj) {
-  // console.log('this', obj);
-  return knex('police_reports')
-    .where('general_offense_number', parseInt(obj.general_offense_number))
-    .then((row) => {
-      // console.log('this2', row);
-      if (!row.length) {
-        console.log('got to this place');
-        knex('police_reports').insert(obj).returning('*')
-          .then((row) => {
-            console.log('here', row);
-          })
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  const promise = new Promise((resolve, reject) => {
+    knex('police_reports')
+      .where('general_offense_number', parseInt(obj.general_offense_number))
+      .then((row) => {
+        if (!row.length) {
+        console.log(obj);
+        return knex('police_reports').insert(obj);
+        }
+      })
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        console.error(err);
+        reject();
+      });
+  });
+
+  return promise;
 }
 
 const insertNewData = function() {
