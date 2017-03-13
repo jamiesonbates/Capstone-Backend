@@ -32,9 +32,9 @@ const prepareDataForConsumption = function(reports) {
         delete report.month;
         delete report.rms_cdw_id;
         delete report.summarized_offense_description;
-        delete report.summarized_offense_code;
+        delete report.summary_offense_code;
         delete report.year;
-        delete report.occured_date_range_end;
+        delete report.occurred_date_range_end;
 
         report.hundred_block = report.hundred_block_location;
         report.date_occurred = report.occurred_date_or_date_range_start;

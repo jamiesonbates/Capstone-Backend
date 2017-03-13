@@ -109,7 +109,7 @@ suite('prepareDataForConsumption function', () => {
   });
 
   test('delete unneeded keys', (done) => {
-    const resultKeys = Object.keys(prepareDataForConsumption()[0]);
+    const resultKeys = Object.keys(results[0]);
 
     assert.notInclude(resultKeys, 'census_tract_2000', 'array not include key');
     assert.notInclude(resultKeys, 'location', 'array not include key');
