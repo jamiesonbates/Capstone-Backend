@@ -12,17 +12,18 @@ exports.up = function(knex) {
       .references('id')
       .inTable('offense_types')
       .notNullable()
+      .onDelete('CASCADE')
       .index();
-    table.integer('offense_code');
-    table.integer('offense_code_extension');
-    table.integer('specific_offense_type');
-    table.string('date_reported');
-    table.string('date_occured');
+    table.integer('specific_offense_code');
+    table.integer('specific_offense_code_extension');
+    table.string('specific_offense_type');
+    table.timestamp('date_reported');
+    table.timestamp('date_occurred');
     table
-      .integer('latitude')
+      .float('latitude')
       .notNullable();
     table
-      .integer('longitude')
+      .float('longitude')
       .notNullable();
     table.string('hundred_block');
     table.string('district_sector');

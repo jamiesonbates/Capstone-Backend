@@ -84,10 +84,18 @@ const getDataWithinDateRange = function() {
 }
 
 const identifyNewDataAndInsert = function(obj) {
-  knex('police_reports')
-    .where('general_offense_number', obj.general_offense_number)
+  // console.log('this', obj);
+  return knex('police_reports')
+    .where('general_offense_number', parseInt(obj.general_offense_number))
     .then((row) => {
-      knex('police_reports').insert(obj);
+      // console.log('this2', row);
+      if (!row.length) {
+        console.log('got to this place');
+        knex('police_reports').insert(obj).returning('*')
+          .then((row) => {
+            console.log('here', row);
+          })
+      }
     })
     .catch((err) => {
       console.error(err);
@@ -107,8 +115,8 @@ const updateData = function() {
 }
 
 const runDatabaseJob = function() {
-  const dataFromAPI;
-  const dataFromDB;
+  let dataFromAPI;
+  let dataFromDB;
 
   return getPoliceReports()
     .then((data) => {

@@ -12,7 +12,7 @@ exports.up = function(knex) {
     table
       .string('offense_name')
       .notNullable();
-  });
+  })
 };
 
 exports.down = function(knex) {

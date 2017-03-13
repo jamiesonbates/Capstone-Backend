@@ -26,57 +26,11 @@ const reportsForTestDB = require('./testdata/reportsForTestDB');
 const reportsWithNewData = require('./testdata/reportsWithNewData');
 
 beforeEach(done => {
-  knex.schema.createTable('offense_types', (table) => {
-    table.increments();
-    table
-      .string('summarized_offense_type')
-      .notNullable();
-    table
-      .integer('summarized_offense_code')
-      .notNullable();
-    table
-      .string('offense_name')
-      .notNullable();
-  })
+  knex.migrate.latest()
   .then(() => {
-    return knex.schema.createTable('police_reports', (table) => {
-      table.increments();
-      table
-        .integer('general_offense_number')
-        .notNullable()
-        .unique();
-      table
-        .integer('offense_type_id')
-        .references('id')
-        .inTable('offense_types')
-        .notNullable()
-        .index();
-      table.integer('specific_offense_code');
-      table.integer('specific_offense_code_extension');
-      table.string('specific_offense_type');
-      table.timestamp('date_reported');
-      table.timestamp('date_occured');
-      table
-        .float('latitude')
-        .notNullable();
-      table
-        .float('longitude')
-        .notNullable();
-      table.string('hundred_block');
-      table.string('district_sector');
-      table.string('zone_beat');
-      table.timestamps(true, true);
-    });
+    return knex.seed.run();
   })
-  .then(() => {
-    return knex('offense_types').insert(decamelizeKeys(crimeDictionary));
-  })
-  .then(() => {
-    return knex('police_reports').insert(reportsForTestDB);
-  })
-  .then(() => {
-    done();
-  })
+  .then(() => done())
   .catch((err) => {
     done(err);
   });
@@ -150,37 +104,51 @@ suite('removeDuplicateReports function', () => {
 
 suite('identifyNewDataAndInsert function', () => {
   test('function should insert a new row', (done) => {
-    identifyNewDataAndInsert(reportsWithNewData)
-      .then(() => {
-        return knex('police_reports').where('general_offense_number', 201779999);
-      })
-      .then((row) => {
-        assert.deepEqual(row, {
-          date_reported: '2017-03-01T11:25:00.000',
-          district_sector: 'W',
-          general_offense_number: '201779999',
-          hundred_block: '44 AV SW / SW ADMIRAL WY',
-          offense_type_id: 1,
-          latitude: '47.581176758',
-          longitude: '-122.387863159',
-          date_occurred: '2017-02-28T21:00:00.000',
-          specific_offense_code: '2404',
-          specific_offense_code_extension: '1',
-          specific_offense_type: 'VEH-THEFT-AUTO',
-          zone_beat: 'W1'
-        });
-        done();
-      });
+    const promises = [];
+
+    for (const report of reportsWithNewData) {
+      promises.push(identifyNewDataAndInsert(report));
+    }
+
+    Promise.all(promises)
+        .then(() => {
+          return knex('police_reports')
+            .where('general_offense_number', 201779999);
+        })
+        .then((row) => {
+          delete row.id;
+
+          console.log(row);
+          assert.deepEqual(row[0], {
+            date_reported: '2017-03-01T11:25:00.000',
+            district_sector: 'W',
+            general_offense_number: '201779999',
+            hundred_block: '44 AV SW / SW ADMIRAL WY',
+            offense_type_id: 1,
+            latitude: '47.581176758',
+            longitude: '-122.387863159',
+            date_occurred: '2017-02-28T21:00:00.000',
+            specific_offense_code: '2404',
+            specific_offense_code_extension: '1',
+            specific_offense_type: 'VEH-THEFT-AUTO',
+            zone_beat: 'W1'
+          });
+
+          done();
+        })
+        .catch((err) => {
+          console.error(err);
+        })
   });
 })
 
-afterEach(done => {
-  knex.schema.dropTable('police_reports')
-    .then(() => {
-      return knex.schema.dropTable('offense_types');
-    })
-    .then(() => done())
-    .catch((err) => {
-      done(err);
-    });
-});
+// afterEach(done => {
+//   knex.schema.dropTable('police_reports')
+//     .then(() => {
+//       return knex.schema.dropTable('offense_types');
+//     })
+//     .then(() => done())
+//     .catch((err) => {
+//       done(err);
+//     });
+// });
