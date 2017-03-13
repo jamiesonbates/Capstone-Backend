@@ -113,6 +113,12 @@ suite('getMatchingData function', () => {
   });
 });
 
+suite('removeDuplicateReports function', () => {
+  test('removes duplicates in API data', (done) => {
+    
+  });
+});
+
 afterEach(done => {
   knex.schema.dropTable('police_reports')
     .then(() => {

@@ -8,7 +8,10 @@ const moment = require('moment');
 const crimeDictionary = require('../test/testdata/crimeDictionary');
 
 const getPoliceReports = function() {
-  const url = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported > '2017-02-01T11:19:00.000'`;
+  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported > `;
+  const oneMonthAgo = moment().subtract(1, 'months');
+  const url = base + oneMonthAgo
+
   return axios.get(url)
     .then((res) => {
       return res.data;
@@ -28,6 +31,26 @@ const filterReports = function(reports) {
   })
 
   return filteredReports;
+}
+
+const removeDuplicateReports = function(reports) {
+  const newReports = [];
+
+  for (const report of reports) {
+    const isDuplicate = newReports.reduce((acc, newReport) => {
+      if (report.general_offense_number === newReport.general_offense_number) {
+        acc = true;
+      }
+
+      return acc;
+    }, false);
+
+    if (!isDuplicate) {
+      newReports.push(report);
+    }
+  }
+
+  return newReports;
 }
 
 const getDataWithinDateRange = function() {
@@ -70,5 +93,6 @@ module.exports = {
   runDatabaseJob,
   getPoliceReports,
   filterReports,
-  getDataWithinDateRange
+  getDataWithinDateRange,
+  removeDuplicateReports
 }
