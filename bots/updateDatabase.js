@@ -27,10 +27,20 @@ const prepareDataForConsumption = function(reports) {
       if (offense.summarizedOffenseType === report.summarized_offense_description) {
         report.offense_type_id = offense.id;
 
+        delete report.census_tract_2000;
+        delete report.location;
+        delete report.month;
+        delete report.rms_cdw_id;
+        delete report.summarized_offense_description;
+        delete report.summarized_offense_code;
+        delete report.year;
+        delete report.occured_date_range_end;
+
         return report;
       }
     }
-  })
+  });
+  console.log(filteredReports);
 
   return filteredReports;
 }
