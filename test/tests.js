@@ -6,13 +6,15 @@ process.env.NODE_ENV = 'test';
 const assert = require('chai').assert;
 const { camelizeKeys, decamelizeKeys } = require('humps');
 const knex = require('../knex');
+const moment = require('moment');
 const { suite, test } = require('mocha');
 
 // Functions
 const {
   getPoliceReports,
   filterReports,
-  getDataWithinDateRange
+  getDataWithinDateRange,
+  removeDuplicateReports
 } = require('../bots/updateDatabase');
 
 // Data
@@ -115,7 +117,11 @@ suite('getMatchingData function', () => {
 
 suite('removeDuplicateReports function', () => {
   test('removes duplicates in API data', (done) => {
-    
+    removeDuplicateReports(sampleResponse)
+      .then((results) => {
+        assert.isBelow(sampleResponse.length, results.length);
+        done();
+      });
   });
 });
 

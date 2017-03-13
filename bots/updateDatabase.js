@@ -8,9 +8,9 @@ const moment = require('moment');
 const crimeDictionary = require('../test/testdata/crimeDictionary');
 
 const getPoliceReports = function() {
-  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported > `;
-  const oneMonthAgo = moment().subtract(1, 'months');
-  const url = base + oneMonthAgo
+  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported >`;
+  const oneMonthAgo = moment().subtract(1, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
+  const url = `${base} '${oneMonthAgo}'`;
 
   return axios.get(url)
     .then((res) => {
