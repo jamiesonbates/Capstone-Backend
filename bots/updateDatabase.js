@@ -89,7 +89,6 @@ const identifyNewDataAndInsert = function(obj) {
       .where('general_offense_number', parseInt(obj.general_offense_number))
       .then((row) => {
         if (!row.length) {
-        console.log(obj);
         return knex('police_reports').insert(obj);
         }
       })
