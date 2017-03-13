@@ -12,7 +12,7 @@ const { suite, test } = require('mocha');
 const {
   getPoliceReports,
   filterReports,
-  getMatchingData
+  getDataWithinDateRange
 } = require('../bots/updateDatabase');
 
 // Data
@@ -102,7 +102,7 @@ suite('filterReports function', () => {
 
 suite('getMatchingData function', () => {
   test('gets data from database based upon time', (done) => {
-    getMatchingData()
+    getDataWithinDateRange()
       .then((results) => {
         assert.deepEqual(results.length, reportsForTestDB.length - 1);
         done();

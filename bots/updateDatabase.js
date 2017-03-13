@@ -30,7 +30,7 @@ const filterReports = function(reports) {
   return filteredReports;
 }
 
-const getMatchingData = function() {
+const getDataWithinDateRange = function() {
   const now = moment();
   const oneMonthAgo = moment().subtract(1, 'months');
 
@@ -70,5 +70,5 @@ module.exports = {
   runDatabaseJob,
   getPoliceReports,
   filterReports,
-  getMatchingData
+  getDataWithinDateRange
 }
