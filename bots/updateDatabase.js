@@ -25,6 +25,8 @@ const filterReports = function(reports) {
   const filteredReports = reports.filter(report => {
     for (const offense of crimeDictionary) {
       if (offense.summarizedOffenseType === report.summarized_offense_description) {
+        report.offense_type_id = crimeDictrionary.id;
+
         return report;
       }
     }
