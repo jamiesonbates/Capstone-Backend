@@ -83,8 +83,15 @@ const getDataWithinDateRange = function() {
   return knex('police_reports').whereBetween('date_reported', [oneMonthAgo, now]);
 }
 
-const identifyNewData = function() {
-
+const identifyNewDataAndInsert = function(obj) {
+  knex('police_reports')
+    .where('general_offense_number', obj.general_offense_number)
+    .then((row) => {
+      knex('police_reports').insert(obj);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 }
 
 const insertNewData = function() {
@@ -100,14 +107,23 @@ const updateData = function() {
 }
 
 const runDatabaseJob = function() {
+  const dataFromAPI;
+  const dataFromDB;
+
   return getPoliceReports()
     .then((data) => {
 
-      return filterReportsWithDictionary(data);
+      return prepareDataForConsumption(data);
     })
     .then((data) => {
-      // console.log(data);
+      dataFromAPI = data;
+
+      return getDataWithinDateRange();
     })
+    .then((data) => {
+      dataFromDB = data;
+
+    });
 
 
 }
@@ -117,5 +133,6 @@ module.exports = {
   getPoliceReports,
   prepareDataForConsumption,
   getDataWithinDateRange,
-  removeDuplicateReports
+  removeDuplicateReports,
+  identifyNewDataAndInsert
 }

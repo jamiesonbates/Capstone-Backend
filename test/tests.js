@@ -14,7 +14,8 @@ const {
   getPoliceReports,
   prepareDataForConsumption,
   getDataWithinDateRange,
-  removeDuplicateReports
+  removeDuplicateReports,
+  identifyNewDataAndInsert
 } = require('../bots/updateDatabase');
 
 // Data
@@ -22,6 +23,7 @@ const sampleResponse = require('./testdata/sampleResponse');
 const crimeDictionary = require('./testdata/crimeDictionary');
 const filteredResults = require('./testdata/filteredResults');
 const reportsForTestDB = require('./testdata/reportsForTestDB');
+const reportsWithNewData = require('./testdata/reportsWithNewData');
 
 beforeEach(done => {
   knex.schema.createTable('offense_types', (table) => {
@@ -145,6 +147,32 @@ suite('removeDuplicateReports function', () => {
     done();
   });
 });
+
+suite('identifyNewDataAndInsert function', () => {
+  test('function should insert a new row', (done) => {
+    identifyNewDataAndInsert(reportsWithNewData)
+      .then(() => {
+        return knex('police_reports').where('general_offense_number', 201779999);
+      })
+      .then((row) => {
+        assert.deepEqual(row, {
+          date_reported: '2017-03-01T11:25:00.000',
+          district_sector: 'W',
+          general_offense_number: '201779999',
+          hundred_block: '44 AV SW / SW ADMIRAL WY',
+          offense_type_id: 1,
+          latitude: '47.581176758',
+          longitude: '-122.387863159',
+          date_occurred: '2017-02-28T21:00:00.000',
+          specific_offense_code: '2404',
+          specific_offense_code_extension: '1',
+          specific_offense_type: 'VEH-THEFT-AUTO',
+          zone_beat: 'W1'
+        });
+        done();
+      });
+  });
+})
 
 afterEach(done => {
   knex.schema.dropTable('police_reports')
