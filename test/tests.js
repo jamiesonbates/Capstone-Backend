@@ -94,19 +94,32 @@ suite('getPoliceReports function', () => {
 });
 
 suite('prepareDataForConsumption function', () => {
-  test('takes in array of objects and filters based on dictionary', (done) => {
-    const results = prepareDataForConsumption(sampleResponse);
+  const results = prepareDataForConsumption(sampleResponse);
 
+  test('takes in array of objects and filters based on dictionary', (done) => {
     assert.deepEqual(results, filteredResults);
     done();
   });
 
   test('assigns a offense_type_id to each object', (done) => {
-    const results = prepareDataForConsumption(sampleResponse);
-
     for (const result of results) {
       assert.isNumber(result.offense_type_id);
     }
+    done();
+  });
+
+  test('delete unneeded keys', (done) => {
+    const resultKeys = Object.keys(prepareDataForConsumption()[0]);
+
+    assert.notInclude(resultKeys, 'census_tract_2000', 'array not include key');
+    assert.notInclude(resultKeys, 'location', 'array not include key');
+    assert.notInclude(resultKeys, 'month', 'array not include key');
+    assert.notInclude(resultKeys, 'year', 'array not include key');
+    assert.notInclude(resultKeys, 'rms_cdw_id', 'array not include key');
+    assert.notInclude(resultKeys, 'summarized_offense_description', 'array not include key');
+    assert.notInclude(resultKeys, 'summarized_offense_type', 'array not include key');
+    assert.notInclude(resultKeys, 'summarized_offense_code', 'array not include key');
+    assert.notInclude(resultKeys, 'occured_date_range_end', 'array not include key');
     done();
   });
 });

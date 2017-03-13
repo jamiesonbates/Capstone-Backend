@@ -70,7 +70,7 @@ const reports = [
     date_occured: '2017-03-02T10:16:00.000',
     specific_offense_code: '1313',
     specific_offense_code_extension: '2',
-    specific_pecific_offense_type: 'ASSLT-NONAGG-POLICE',
+    specific_offense_type: 'ASSLT-NONAGG-POLICE',
     offense_type_id: 3,
     zone_beat: 'M3'
   },
