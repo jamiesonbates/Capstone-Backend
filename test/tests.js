@@ -104,7 +104,7 @@ suite('getMatchingData function', () => {
   test('gets data from database based upon time', (done) => {
     getMatchingData()
       .then((results) => {
-        console.log(results);
+        assert.deepEqual(results.length, reportsForTestDB.length - 1);
         done();
       });
   });
