@@ -9,7 +9,11 @@ const knex = require('../knex');
 const { suite, test } = require('mocha');
 
 // Functions
-const { getPoliceReports, filterReports } = require('../bots/updateDatabase');
+const {
+  getPoliceReports,
+  filterReports,
+  getMatchingData
+} = require('../bots/updateDatabase');
 
 // Data
 const sampleResponse = require('./testdata/sampleResponse');
@@ -46,8 +50,8 @@ beforeEach(done => {
       table.integer('offense_code');
       table.integer('offense_code_extension');
       table.string('specific_offense_type');
-      table.string('date_reported');
-      table.string('date_occured');
+      table.timestamp('date_reported');
+      table.timestamp('date_occured');
       table
         .float('latitude')
         .notNullable();
@@ -93,6 +97,16 @@ suite('filterReports function', () => {
 
     assert.deepEqual(results, filteredResults);
     done();
+  });
+});
+
+suite('getMatchingData function', () => {
+  test('gets data from database based upon time', (done) => {
+    getMatchingData()
+      .then((results) => {
+        console.log(results);
+        done();
+      });
   });
 });
 

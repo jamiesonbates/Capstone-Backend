@@ -133,6 +133,21 @@ const reports = [
     specific_offense_type: 'PROPERTY DAMAGE - GRAFFITI',
     offense_type_id: 7,
     zone_beat: 'M2'
+  },
+  {
+    id: 10,
+    date_reported: '2017-02-01T15:42:00.000',
+    district_sector: 'E',
+    general_offense_number: '201739375',
+    hundred_block: '9 AV / MADISON ST',
+    latitude: '47.608406067',
+    longitude: '-122.327362061',
+    date_occured: '2017-02-01T15:42:00.000',
+    offense_code: '2305',
+    offense_code_extension: '0',
+    specific_offense_type: 'THEFT-CARPROWL',
+    offense_type_id: 10,
+    zone_beat: 'E3'
   }
 ];
 

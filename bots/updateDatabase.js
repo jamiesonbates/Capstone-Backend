@@ -8,7 +8,7 @@ const moment = require('moment');
 const crimeDictionary = require('../test/testdata/crimeDictionary');
 
 const getPoliceReports = function() {
-  const url = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported > '2017-03-01T11:19:00.000'`;
+  const url = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported > '2017-02-01T11:19:00.000'`;
   return axios.get(url)
     .then((res) => {
       return res.data;
@@ -31,7 +31,10 @@ const filterReports = function(reports) {
 }
 
 const getMatchingData = function() {
-  
+  const now = moment();
+  const oneMonthAgo = moment().subtract(1, 'months');
+
+  return knex('reports').whereBetween('date_reported', [oneMonthAgo, now]);
 }
 
 const identifyNewData = function() {
@@ -66,5 +69,6 @@ const runDatabaseJob = function() {
 module.exports = {
   runDatabaseJob,
   getPoliceReports,
-  filterReports
+  filterReports,
+  getMatchingData
 }
