@@ -21,11 +21,11 @@ const getPoliceReports = function() {
     });
 };
 
-const filterReports = function(reports) {
+const prepareDataForConsumption = function(reports) {
   const filteredReports = reports.filter(report => {
     for (const offense of crimeDictionary) {
       if (offense.summarizedOffenseType === report.summarized_offense_description) {
-        report.offense_type_id = crimeDictrionary.id;
+        report.offense_type_id = offense.id;
 
         return report;
       }
@@ -94,7 +94,7 @@ const runDatabaseJob = function() {
 module.exports = {
   runDatabaseJob,
   getPoliceReports,
-  filterReports,
+  prepareDataForConsumption,
   getDataWithinDateRange,
   removeDuplicateReports
 }

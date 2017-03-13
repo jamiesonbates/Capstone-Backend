@@ -12,7 +12,7 @@ const { suite, test } = require('mocha');
 // Functions
 const {
   getPoliceReports,
-  filterReports,
+  prepareDataForConsumption,
   getDataWithinDateRange,
   removeDuplicateReports
 } = require('../bots/updateDatabase');
@@ -93,11 +93,20 @@ suite('getPoliceReports function', () => {
   });
 });
 
-suite('filterReports function', () => {
+suite('prepareDataForConsumption function', () => {
   test('takes in array of objects and filters based on dictionary', (done) => {
-    const results = filterReports(sampleResponse);
+    const results = prepareDataForConsumption(sampleResponse);
 
     assert.deepEqual(results, filteredResults);
+    done();
+  });
+
+  test('assigns a offense_type_id to each object', (done) => {
+    const results = prepareDataForConsumption(sampleResponse);
+
+    for (const result of results) {
+      assert.isNumber(result.offense_type_id);
+    }
     done();
   });
 });
