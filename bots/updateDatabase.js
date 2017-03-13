@@ -52,7 +52,6 @@ const prepareDataForConsumption = function(reports) {
       }
     }
   });
-  console.log(filteredReports);
 
   return filteredReports;
 }
