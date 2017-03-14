@@ -116,6 +116,7 @@ const identifyAlteredData = function(apiData, dbData) {
         const isDifferent = dbRecordKeys.reduce((acc2, key) => {
           if (apiRecord[key] !== dbRecord[key] && keysToCheck.includes(key)) {
             acc2 = true;
+
             return acc2;
           }
 
@@ -125,10 +126,12 @@ const identifyAlteredData = function(apiData, dbData) {
         if (isDifferent) {
           apiRecord.id = dbRecord.id;
           acc.push(apiRecord);
+
           return acc;
         }
       }
     }
+    
     return acc;
   }, []);
 
