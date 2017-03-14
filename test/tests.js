@@ -120,15 +120,20 @@ suite('identifyNewDataAndInsert function', () => {
           delete row.id;
           delete row.created_at;
           delete row.updated_at;
+          delete row.date_occurred;
+          delete row.date_reported;
+
+          row.latitude = parseFloat(row.latitude);
+          row.longitude = parseFloat(row.longitude);
+
+          console.log(row);
 
           assert.deepEqual(row, {
-            general_offense_number: '201779999',
+            general_offense_number: 201779999,
             offense_type_id: 1,
-            specific_offense_code: '2404',
-            specific_offense_code_extension: '1',
+            specific_offense_code: 2404,
+            specific_offense_code_extension: 1,
             specific_offense_type: 'VEH-THEFT-AUTO',
-            date_reported: '2017-03-01T11:25:00.000',
-            date_occurred: '2017-02-28T21:00:00.000',
             latitude: 47.581176758,
             longitude: -122.387863159,
             hundred_block: '44 AV SW / SW ADMIRAL WY',

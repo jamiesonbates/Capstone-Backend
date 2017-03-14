@@ -17,8 +17,8 @@ exports.up = function(knex) {
     table.integer('specific_offense_code');
     table.integer('specific_offense_code_extension');
     table.string('specific_offense_type');
-    table.dateTime('date_reported');
-    table.dateTime('date_occurred');
+    table.dateTime('date_reported', true);
+    table.dateTime('date_occurred', true);
     table
       .decimal('latitude', 11, 9)
       .notNullable();

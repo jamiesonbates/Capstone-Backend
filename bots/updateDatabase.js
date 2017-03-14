@@ -89,7 +89,7 @@ const identifyNewDataAndInsert = function(obj) {
       .where('general_offense_number', parseInt(obj.general_offense_number))
       .then((row) => {
         if (!row.length) {
-        return knex('police_reports').insert(obj);
+          return knex('police_reports').insert(obj);
         }
       })
       .then(() => {
@@ -104,12 +104,10 @@ const identifyNewDataAndInsert = function(obj) {
   return promise;
 }
 
-const insertNewData = function() {
+const identifyAlteredDataAndUpdated = function() {
+  const promise = new Promise((resolve, reject) => {
 
-}
-
-const identifyUpdatedData = function() {
-
+  })
 }
 
 const updateData = function() {
@@ -133,7 +131,17 @@ const runDatabaseJob = function() {
     .then((data) => {
       dataFromDB = data;
 
-    });
+      const res = [];
+
+      for (const record of dataFromAPI) {
+        res.push(identifyNewDataAndInsert(record));
+      }
+
+      return Promise.all(res);
+    })
+    .then(() => {
+
+    })
 
 
 }

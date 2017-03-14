@@ -9,7 +9,7 @@ const res = [
     longitude: '-122.292160034',
     month: '3',
     occurred_date_or_date_range_start: '2017-03-01T14:51:00.000',
-    occurred_date_range_end: '',
+    // occurred_date_range_end: '',
     offense_code: '5015',
     offense_code_extension: '2',
     offense_type: 'WARRARR-MISDEMEANOR',
