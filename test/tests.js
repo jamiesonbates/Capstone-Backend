@@ -42,7 +42,7 @@ beforeEach(done => {
 
 suite('getPoliceReports function', () => {
   test('obtains a valid set of police reports with given keys', (done) => {
-    getPoliceReports()
+    getPoliceReports(1)
       .then((results) => {
         delete results[0].occurred_date_range_end;
         delete sampleResponse[0].occurred_date_range_end
@@ -88,7 +88,7 @@ suite('prepareDataForConsumption function', () => {
 
 suite('getMatchingData function', () => {
   test('gets data from database based upon time', (done) => {
-    getDataWithinDateRange()
+    getDataWithinDateRange(1)
       .then((results) => {
         assert.deepEqual(results.length, reportsForTestDB.length - 2);
         done();
@@ -155,7 +155,7 @@ suite('identifyNewDataAndInsert function', () => {
 
 suite('identifyAlteredDataAndUpdate', () => {
   test('function should update rows where data has changed', (done) => {
-    getDataWithinDateRange()
+    getDataWithinDateRange(1)
       .then((data) => {
         return identifyAlteredData(reportsWithUpdatedData, data);
       })

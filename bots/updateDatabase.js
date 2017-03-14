@@ -1,12 +1,15 @@
 'use strict';
 
+// Dependencies
 const axios = require('axios');
 const { camelizeKeys, decamelizeKeys } = require('humps');
 const knex = require('../knex');
 const moment = require('moment');
 
+// Data
 const crimeDictionary = require('../test/testdata/crimeDictionary');
 
+// Delete reports that are older than 1 year old
 const deleteOldReports = function() {
   const now = moment();
   const oneYearAgo = moment().subtract(1, 'years');
@@ -16,9 +19,10 @@ const deleteOldReports = function() {
     .del();
 }
 
-const getPoliceReports = function() {
+// Get police reports from API within "length" months
+const getPoliceReports = function(length) {
   const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported >`;
-  const oneMonthAgo = moment().subtract(1, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
+  const oneMonthAgo = moment().subtract(length, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
   const url = `${base} '${oneMonthAgo}'`;
 
   return axios.get(url)
@@ -30,6 +34,7 @@ const getPoliceReports = function() {
     });
 };
 
+// Remove unneeded fields, alter some key names, filter by type of crime
 const prepareDataForConsumption = function(reports) {
   const filteredReports = reports.filter(report => {
     for (const offense of crimeDictionary) {
@@ -65,6 +70,7 @@ const prepareDataForConsumption = function(reports) {
   return filteredReports;
 }
 
+// Remove duplicate reports given by API (unique key is general_offense_number)
 const removeDuplicateReports = function(reports) {
   const newReports = [];
 
@@ -85,21 +91,30 @@ const removeDuplicateReports = function(reports) {
   return newReports;
 };
 
-const getDataWithinDateRange = function() {
+// Get police reports from DB within "length" months
+const getDataWithinDateRange = function(length) {
   const now = moment();
-  const oneMonthAgo = moment().subtract(1, 'months');
+  const oneMonthAgo = moment().subtract(length, 'months');
 
   return knex('police_reports').whereBetween('date_reported', [oneMonthAgo, now]);
 }
 
-const identifyNewDataAndInsert = function(obj) {
+// Identify new data and insert into DB
+const identifyNewDataAndInsert = function(report) {
   const promise = new Promise((resolve, reject) => {
     knex('police_reports')
-      .where('general_offense_number', parseInt(obj.general_offense_number))
+      .where('general_offense_number', parseInt(report.general_offense_number))
       .then((row) => {
         if (!row.length) {
-          return knex('police_reports').insert(obj);
+          if (report.specific_offense_code === 'X') {
+            report.specific_offense_code = null;
+            console.log('here');
+          }
+
+          return knex('police_reports').insert(report);
         }
+
+        return;
       })
       .then(() => {
         resolve();
@@ -113,6 +128,7 @@ const identifyNewDataAndInsert = function(obj) {
   return promise;
 }
 
+// Identify police reports from API that have been altered
 const identifyAlteredData = function(apiData, dbData) {
   const toBeUpdated = dbData.reduce((acc, dbRecord) => {
     for (const apiRecord of apiData) {
@@ -147,7 +163,7 @@ const identifyAlteredData = function(apiData, dbData) {
   return toBeUpdated;
 };
 
-
+// Update row w/ police report in place if it was found to be altered from API
 const updateAlteredData = function(report) {
   const promise = new Promise((resolve, reject) => {
     return knex('police_reports').where('id', report.id).update(report)
@@ -162,18 +178,27 @@ const updateAlteredData = function(report) {
   return promise;
 }
 
+// Use above functions to update the database in this scheduled job
 const runDatabaseJob = function() {
   let dataFromAPI;
   let dataFromDB;
-
-  return getPoliceReports()
+  console.log('deleteOldReports');
+  return deleteOldReports()
+    .then(() => {
+      console.log('getPoliceReports');
+      return getPoliceReports(12);
+    })
     .then((data) => {
-
+      console.log('prepareDataForConsumption');
       return prepareDataForConsumption(data);
     })
     .then((data) => {
+      console.log('removeDuplicateReports');
+      return removeDuplicateReports(data);
+    })
+    .then((data) => {
       dataFromAPI = data;
-
+      console.log('getDataWithinDateRange');
       return getDataWithinDateRange();
     })
     .then((data) => {
@@ -184,12 +209,29 @@ const runDatabaseJob = function() {
       for (const record of dataFromAPI) {
         res.push(identifyNewDataAndInsert(record));
       }
-
+      console.log('Promise.all() identifyNewDataAndInsert');
       return Promise.all(res);
     })
     .then(() => {
-
+      console.log('identifyAlteredData');
+      return identifyAlteredData(dataFromAPI, dataFromDB);
     })
+    .then((toBeUpdated) => {
+      const res = [];
+
+      for (const record of toBeUpdated) {
+        res.push(updateAlteredData(res));
+      }
+      console.log('updateAlteredData');
+      return Promise.all(res);
+    })
+    .then(() => {
+      console.log('Success!');
+    })
+    .catch((err) => {
+      console.log('Failure :(');
+      console.error(err);
+    });
 
 
 }
