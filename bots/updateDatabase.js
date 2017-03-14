@@ -112,7 +112,6 @@ const identifyNewDataAndInsert = function(report) {
 
           console.log('------------------------------------------');
           console.log(report);
-          console.log(report);
           return knex.raw(`
             INSERT INTO police_reports (
               date_reported,
@@ -126,7 +125,9 @@ const identifyNewDataAndInsert = function(report) {
               date_occurred,
               specific_offense_code,
               specific_offense_code_extension,
-              specific_offense_type, zone_beat)
+              specific_offense_type, zone_beat,
+              created_at,
+              updated_at)
             VALUES (
               '${report.date_reported}',
               '${report.district_sector}', ${report.general_offense_number},
@@ -135,7 +136,9 @@ const identifyNewDataAndInsert = function(report) {
               ${report.longitude}, ST_GeographyFromText('SRID=4326;POINT(${report.longitude} ${report.latitude})'),
               '${report.date_occurred}',
               ${report.specific_offense_code}, ${report.specific_offense_code_extension}, '${report.specific_offense_type}',
-              '${report.zone_beat}')
+              '${report.zone_beat}',
+              '${moment().format('YYYY-MM-DDTHH:mm:ss.SSS')}',
+              '${moment().format('YYYY-MM-DDTHH:mm:ss.SSS')}')
           `)
         }
 
