@@ -231,7 +231,6 @@ suite('deleteOldReports function', () => {
         return knex('police_reports').where('general_offense_number', 201739380);
       })
       .then((row) => {
-        console.log(row);
         assert.lengthOf(row, 0);
         done();
       })

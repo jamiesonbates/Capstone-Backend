@@ -10,7 +10,6 @@ const crimeDictionary = require('../test/testdata/crimeDictionary');
 const deleteOldReports = function() {
   const now = moment();
   const oneYearAgo = moment().subtract(1, 'years');
-  console.log(oneYearAgo);
 
   return knex('police_reports')
     .where('date_occurred', '<', oneYearAgo)
