@@ -166,7 +166,59 @@ suite('identifyAlteredDataAndUpdate', () => {
         return Promise.all(res);
       })
       .then(() => {
-        console.log('wow');
+        knex('police_reports').whereIn('general_offense_number', [201773977, 201774471])
+          .then((data) => {
+            delete data[0].id;
+            delete data[1].id;
+            delete data[0].created_at;
+            delete data[0].updated_at;
+            delete data[1].created_at;
+            delete data[1].updated_at;
+
+            // Delete pending fix for test data?
+            delete data[0].date_occurred;
+            delete data[1].date_occurred;
+            delete data[0].date_reported;
+            delete data[1].date_reported;
+
+            data[0].latitude = parseFloat(data[0].latitude);
+            data[0].longitude = parseFloat(data[0].longitude);
+            data[1].latitude = parseFloat(data[1].latitude);
+            data[1].longitude = parseFloat(data[1].longitude);
+
+            assert.deepEqual(data[0], {
+              // date_reported: '2017-03-01T11:25:00.000',
+              district_sector: 'W',
+              general_offense_number: 201773977,
+              hundred_block: '44 AV NW / SW ADMIRAL WY',
+              offense_type_id: 1,
+              latitude: 47.581176758,
+              longitude: -122.387863159,
+              // date_occurred: '2017-02-28T21:00:00.000',
+              specific_offense_code: 2404,
+              specific_offense_code_extension: 1,
+              specific_offense_type: 'VEH-THEFT-AUTO',
+              zone_beat: 'W2'
+            });
+            assert.deepEqual(data[1], {
+              // date_reported: '2017-03-01T17:33:00.000',
+              district_sector: 'F',
+              general_offense_number: 201774471,
+              hundred_block: '35 AVE SW / SW THISTLE ST',
+              offense_type_id: 1,
+              latitude: 47.528282166,
+              longitude: -122.37664032,
+              // date_occurred: '2017-03-01T06:40:00.000',
+              specific_offense_code: 2404,
+              specific_offense_code_extension: 1,
+              specific_offense_type: 'VEH-THEFT-AUTO',
+              zone_beat: 'F2'
+            });
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
       });
   });
 });

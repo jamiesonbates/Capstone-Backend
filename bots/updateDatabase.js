@@ -138,7 +138,6 @@ const identifyAlteredData = function(apiData, dbData) {
 
 const updateAlteredData = function(report) {
   const promise = new Promise((resolve, reject) => {
-    console.log('here');
     return knex('police_reports').where('id', report.id).update(report)
       .then(() => {
         resolve();
