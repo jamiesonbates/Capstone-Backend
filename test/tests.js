@@ -15,7 +15,9 @@ const {
   prepareDataForConsumption,
   getDataWithinDateRange,
   removeDuplicateReports,
-  identifyNewDataAndInsert
+  identifyNewDataAndInsert,
+  identifyAlteredData,
+  updateAlteredData
 } = require('../bots/updateDatabase');
 
 // Data
@@ -24,6 +26,7 @@ const crimeDictionary = require('./testdata/crimeDictionary');
 const filteredResults = require('./testdata/filteredResults');
 const reportsForTestDB = require('./testdata/reportsForTestDB');
 const reportsWithNewData = require('./testdata/reportsWithNewData');
+const reportsWithUpdatedData = require('./testdata/reportsWithUpdatedData');
 
 beforeEach(done => {
   knex.migrate.latest()
@@ -126,8 +129,6 @@ suite('identifyNewDataAndInsert function', () => {
           row.latitude = parseFloat(row.latitude);
           row.longitude = parseFloat(row.longitude);
 
-          console.log(row);
-
           assert.deepEqual(row, {
             general_offense_number: 201779999,
             offense_type_id: 1,
@@ -147,4 +148,25 @@ suite('identifyNewDataAndInsert function', () => {
           console.error(err);
         })
   })
+});
+
+suite('identifyAlteredDataAndUpdate', () => {
+  test('function should update rows where data has changed', (done) => {
+    getDataWithinDateRange()
+      .then((data) => {
+        return identifyAlteredData(reportsWithUpdatedData, data);
+      })
+      .then((data) => {
+        const res = [];
+
+        for (const report of data) {
+          res.push(updateAlteredData(report));
+        }
+
+        return Promise.all(res);
+      })
+      .then(() => {
+        console.log('wow');
+      });
+  });
 });

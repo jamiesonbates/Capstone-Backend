@@ -104,24 +104,51 @@ const identifyNewDataAndInsert = function(obj) {
   return promise;
 }
 
-const identifyAlteredDataAndUpdated = function(apiData, dbData) {
-  const promise = new Promise((resolve, reject) => {
-    const toBeUpdated = dataDB.filter(dbRecord => {
-      for (const apiRecord of dataAPI) {
-        if (apiRecord.general_offense_number === dbRecord.general_offense_number && JSON.stringify(apiRecord) !== JSON.stringify(dbRecord)) {
-          apiRecord.id = dbRecord.id;
+const identifyAlteredData = function(apiData, dbData) {
+  const toBeUpdated = dbData.reduce((acc, dbRecord) => {
+    for (const apiRecord of apiData) {
+      const apiIdentifier = apiRecord.general_offense_number;
+      const dbIdentifier = dbRecord.general_offense_number;
 
-          return apiRecord;
+      if (apiIdentifier === dbIdentifier) {
+        const dbRecordKeys = Object.keys(dbRecord);
+        const keysToCheck = ['hundred_block', 'zone_beat', 'district_sector', 'specific_offense_code', 'specific_offense_code_extension', 'specific_offense_type'];
+        const isDifferent = dbRecordKeys.reduce((acc2, key) => {
+          if (apiRecord[key] !== dbRecord[key] && keysToCheck.includes(key)) {
+            acc2 = true;
+            return acc2;
+          }
+
+          return acc2;
+        }, false);
+
+        if (isDifferent) {
+          apiRecord.id = dbRecord.id;
+          acc.push(apiRecord);
+          return acc;
         }
       }
-    });
-  })
+    }
+    return acc;
+  }, []);
+
+  return toBeUpdated;
+};
+
+
+const updateAlteredData = function(report) {
+  const promise = new Promise((resolve, reject) => {
+    console.log('here');
+    return knex('police_reports').where('id', report.id).update(report)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 
   return promise;
-}
-
-const updateData = function() {
-
 }
 
 const runDatabaseJob = function() {
@@ -162,5 +189,7 @@ module.exports = {
   prepareDataForConsumption,
   getDataWithinDateRange,
   removeDuplicateReports,
-  identifyNewDataAndInsert
+  identifyNewDataAndInsert,
+  identifyAlteredData,
+  updateAlteredData
 }
