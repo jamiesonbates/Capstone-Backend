@@ -222,3 +222,19 @@ suite('identifyAlteredDataAndUpdate', () => {
       });
   });
 });
+
+suite('deleteOldReports function', () => {
+  test('should delete reports older than 1 year from the DB', (done) => {
+    deleteOldReports()
+      .then(() => {
+        return knex('police_reports').where('general_offense_number', 201739380);
+      })
+      .then((row) => {
+        assert.isUndefined(row);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});

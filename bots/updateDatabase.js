@@ -7,6 +7,13 @@ const moment = require('moment');
 
 const crimeDictionary = require('../test/testdata/crimeDictionary');
 
+const deleteOldReports = function() {
+  const now = moment();
+  const oneYearAgo = moment().subtract(1, 'years');
+
+  return knex('police_reports').del().whereBetween('date_reported', [oneYearAgo, now]);
+}
+
 const getPoliceReports = function() {
   const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported >`;
   const oneMonthAgo = moment().subtract(1, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
@@ -131,7 +138,7 @@ const identifyAlteredData = function(apiData, dbData) {
         }
       }
     }
-    
+
     return acc;
   }, []);
 
