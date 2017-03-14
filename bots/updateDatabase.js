@@ -108,10 +108,35 @@ const identifyNewDataAndInsert = function(report) {
         if (!row.length) {
           if (report.specific_offense_code === 'X') {
             report.specific_offense_code = null;
-            console.log('here');
           }
 
-          return knex('police_reports').insert(report);
+          console.log('------------------------------------------');
+          console.log(report);
+          console.log(report);
+          return knex.raw(`
+            INSERT INTO police_reports (
+              date_reported,
+              district_sector,
+              general_offense_number,
+              hundred_block,
+              offense_type_id,
+              latitude,
+              longitude,
+              location,
+              date_occurred,
+              specific_offense_code,
+              specific_offense_code_extension,
+              specific_offense_type, zone_beat)
+            VALUES (
+              '${report.date_reported}',
+              '${report.district_sector}', ${report.general_offense_number},
+              '${report.hundred_block}',
+              ${report.offense_type_id}, ${report.latitude},
+              ${report.longitude}, ST_GeographyFromText('SRID=4326;POINT(${report.longitude} ${report.latitude})'),
+              '${report.date_occurred}',
+              ${report.specific_offense_code}, ${report.specific_offense_code_extension}, '${report.specific_offense_type}',
+              '${report.zone_beat}')
+          `)
         }
 
         return;
