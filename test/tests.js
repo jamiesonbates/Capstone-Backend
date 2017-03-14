@@ -44,6 +44,8 @@ suite('getPoliceReports function', () => {
   test('obtains a valid set of police reports with given keys', (done) => {
     getPoliceReports()
       .then((results) => {
+        delete results[0].occurred_date_range_end;
+        delete sampleResponse[0].occured_date_range_end
         assert.deepEqual(Object.keys(results[0]), Object.keys(sampleResponse[0]));
         done();
       })
