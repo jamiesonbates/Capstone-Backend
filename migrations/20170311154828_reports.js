@@ -18,6 +18,8 @@ exports.up = function(knex) {
       specific_offense_type varchar(255),
       date_reported timestamp,
       date_occurred timestamp,
+      longitude varchar(255),
+      latitude varchar(255),
       location geography(POINT, 4326),
       hundred_block varchar(255),
       district_sector varchar(255),

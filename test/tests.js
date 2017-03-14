@@ -25,7 +25,6 @@ const {
 const sampleResponse = require('./testdata/sampleResponse');
 const crimeDictionary = require('./testdata/crimeDictionary');
 const filteredResults = require('./testdata/filteredResults');
-const reportsForTestDB = require('./testdata/reportsForTestDB');
 const reportsWithNewData = require('./testdata/reportsWithNewData');
 const reportsWithUpdatedData = require('./testdata/reportsWithUpdatedData');
 
@@ -90,7 +89,7 @@ suite('getMatchingData function', () => {
   test('gets data from database based upon time', (done) => {
     getDataWithinDateRange(1)
       .then((results) => {
-        assert.deepEqual(results.length, reportsForTestDB.length - 2);
+        assert.deepEqual(results.length, 9);
         done();
       })
       .catch((err) => {
@@ -128,6 +127,7 @@ suite('identifyNewDataAndInsert function', () => {
           delete row.updated_at;
           delete row.date_occurred;
           delete row.date_reported;
+          delete row.location;
 
           row.latitude = parseFloat(row.latitude);
           row.longitude = parseFloat(row.longitude);
@@ -188,6 +188,8 @@ suite('identifyAlteredDataAndUpdate', () => {
             data[0].longitude = parseFloat(data[0].longitude);
             data[1].latitude = parseFloat(data[1].latitude);
             data[1].longitude = parseFloat(data[1].longitude);
+            delete data[0].location;
+            delete data[1].location;
 
             assert.deepEqual(data[0], {
               // date_reported: '2017-03-01T11:25:00.000',
@@ -248,10 +250,11 @@ suite('test geography type given by postgis', () => {
       SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(-122.387863159, 47.581176758), 10000);
     `)
     .then((data) => {
-      console.log(data.rows);
+      assert.deepEqual(data.rows.length, 9);
+      done()
     })
     .catch((err) => {
-      console.error(err);
+      done(err);
     })
   });
 });
