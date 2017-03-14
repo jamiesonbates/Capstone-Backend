@@ -12,18 +12,18 @@ exports.up = function(knex) {
       offense_type_id integer
         NOT NULL
         REFERENCES offense_types(id)
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
       specific_offense_code integer,
       specific_offense_code_extension integer,
       specific_offense_type varchar(255),
       date_reported timestamp,
-      date_occured timestamp,
+      date_occurred timestamp,
       location geography(POINT, 4326),
       hundred_block varchar(255),
       district_sector varchar(255),
       zone_beat varchar(255),
-      created_at timestamp with time zone,
-      updated_at timestamp with time zone
+      created_at timestamp,
+      updated_at timestamp
     )
   `);
   // return knex.schema.createTable('police_reports', (table) => {

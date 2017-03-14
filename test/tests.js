@@ -241,3 +241,17 @@ suite('deleteOldReports function', () => {
       });
   });
 });
+
+suite('test geography type given by postgis', () => {
+  test('should return subset of data based on distance away', (done) => {
+    knex.raw(`
+      SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(-122.387863159, 47.581176758), 10000);
+    `)
+    .then((data) => {
+      console.log(data.rows);
+    })
+    .catch((err) => {
+      console.error(err);
+    })
+  });
+});
