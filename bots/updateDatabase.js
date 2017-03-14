@@ -104,10 +104,20 @@ const identifyNewDataAndInsert = function(obj) {
   return promise;
 }
 
-const identifyAlteredDataAndUpdated = function() {
+const identifyAlteredDataAndUpdated = function(apiData, dbData) {
   const promise = new Promise((resolve, reject) => {
+    const toBeUpdated = dataDB.filter(dbRecord => {
+      for (const apiRecord of dataAPI) {
+        if (apiRecord.general_offense_number === dbRecord.general_offense_number && JSON.stringify(apiRecord) !== JSON.stringify(dbRecord)) {
+          apiRecord.id = dbRecord.id;
 
+          return apiRecord;
+        }
+      }
+    });
   })
+
+  return promise;
 }
 
 const updateData = function() {
