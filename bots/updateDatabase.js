@@ -10,8 +10,11 @@ const crimeDictionary = require('../test/testdata/crimeDictionary');
 const deleteOldReports = function() {
   const now = moment();
   const oneYearAgo = moment().subtract(1, 'years');
+  console.log(oneYearAgo);
 
-  return knex('police_reports').del().whereBetween('date_reported', [oneYearAgo, now]);
+  return knex('police_reports')
+    .where('date_occurred', '<', oneYearAgo)
+    .del();
 }
 
 const getPoliceReports = function() {
@@ -194,6 +197,7 @@ const runDatabaseJob = function() {
 
 module.exports = {
   runDatabaseJob,
+  deleteOldReports,
   getPoliceReports,
   prepareDataForConsumption,
   getDataWithinDateRange,

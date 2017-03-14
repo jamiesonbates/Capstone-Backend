@@ -12,6 +12,7 @@ const { suite, test } = require('mocha');
 // Functions
 const {
   getPoliceReports,
+  deleteOldReports,
   prepareDataForConsumption,
   getDataWithinDateRange,
   removeDuplicateReports,
@@ -87,7 +88,7 @@ suite('getMatchingData function', () => {
   test('gets data from database based upon time', (done) => {
     getDataWithinDateRange()
       .then((results) => {
-        assert.deepEqual(results.length, reportsForTestDB.length - 1);
+        assert.deepEqual(results.length, reportsForTestDB.length - 2);
         done();
       })
       .catch((err) => {
@@ -230,7 +231,8 @@ suite('deleteOldReports function', () => {
         return knex('police_reports').where('general_offense_number', 201739380);
       })
       .then((row) => {
-        assert.isUndefined(row);
+        console.log(row);
+        assert.lengthOf(row, 0);
         done();
       })
       .catch((err) => {
