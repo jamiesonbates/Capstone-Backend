@@ -103,6 +103,8 @@ const sendAlertsJob = function() {
           }
         })
       }
+
+      return;
     });
 }
 

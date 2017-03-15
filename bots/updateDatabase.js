@@ -273,7 +273,8 @@ const runDatabaseJob = function() {
       return Promise.all(res);
     })
     .then(() => {
-      console.log('Success!');
+      console.log('updateDatabase successful');
+      return;
     })
     .catch((err) => {
       console.log('Failure :(');
