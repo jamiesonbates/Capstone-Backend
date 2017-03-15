@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A web application that enables citizens to track crime nearby via alerts and maps.",
   "main": "knex.js",
+  "engines": {
+    "node": "7.4.0"
+  },
   "directories": {
     "test": "tests"
   },
@@ -21,6 +24,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "foreman": "^2.0.0",
     "mocha": "^3.2.0",
     "nock": "^9.0.9",
     "supertest": "^3.0.0"
@@ -28,7 +32,8 @@
   "scripts": {
     "test": "mocha",
     "knex": "knex",
-    "start": "nodemon server/bin/www"
+    "start": "nodemon server/bin/www",
+    "heroku-postbuild": "knex migrate:latest"
   },
   "repository": {
     "type": "git",
