@@ -35,9 +35,11 @@ router.get('/runjob', (req, res) => {
     })
     .then(() => {
       console.log('Job was successful');
+      res.send(true);
     })
     .catch((err) => {
       console.error(err);
+      res.send(false);
     });
 });
 

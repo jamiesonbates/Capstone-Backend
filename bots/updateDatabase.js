@@ -71,7 +71,6 @@ const prepareDataForConsumption = function(reports, crimeDictionary) {
     }
   });
 
-  console.log(filteredReports);
   return filteredReports;
 };
 
@@ -224,7 +223,7 @@ const runDatabaseJob = function() {
   console.log('deleteOldReports');
   return deleteOldReports()
     .then(() => {
-      console.log(getCrimeDictionary);
+      console.log('getCrimeDictionary');
       return getCrimeDictionary();
     })
     .then((data) => {
