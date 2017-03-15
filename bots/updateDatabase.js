@@ -21,12 +21,13 @@ const deleteOldReports = function() {
 
 // Get police reports from API within "length" months
 const getPoliceReports = function(length) {
-  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$where=date_reported >`;
+  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$limit=50000&$where=date_reported >`;
   const oneMonthAgo = moment().subtract(length, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
   const url = `${base} '${oneMonthAgo}'`;
 
   return axios.get(url)
     .then((res) => {
+      console.log(res.data.length);
       return res.data;
     })
     .catch((err) => {
@@ -109,9 +110,7 @@ const identifyNewDataAndInsert = function(report) {
           if (report.specific_offense_code === 'X') {
             report.specific_offense_code = null;
           }
-
-          console.log('------------------------------------------');
-          console.log(report);
+          
           return knex.raw(`
             INSERT INTO police_reports (
               date_reported,
