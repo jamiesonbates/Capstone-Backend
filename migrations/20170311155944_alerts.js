@@ -8,12 +8,14 @@ exports.up = function(knex) {
       .references('id')
       .inTable('users')
       .notNullable()
+      .onDelete('CASCADE')
       .index();
     table
       .integer('offense_type_id')
       .references('id')
       .inTable('offense_types')
       .notNullable()
+      .onDelete('CASCADE')
       .index();
     table
       .integer('range')

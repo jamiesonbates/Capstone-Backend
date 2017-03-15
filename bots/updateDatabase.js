@@ -27,7 +27,6 @@ const getPoliceReports = function(length) {
 
   return axios.get(url)
     .then((res) => {
-      console.log(res.data.length);
       return res.data;
     })
     .catch((err) => {
@@ -110,7 +109,7 @@ const identifyNewDataAndInsert = function(report) {
           if (report.specific_offense_code === 'X') {
             report.specific_offense_code = null;
           }
-          
+
           return knex.raw(`
             INSERT INTO police_reports (
               date_reported,

@@ -21,6 +21,13 @@ const {
   updateAlteredData
 } = require('../bots/updateDatabase');
 
+const {
+  sendAlertsJob,
+  getAllAlerts,
+  checkForMatches,
+  sendAlertsFromMatches
+} = require('../bots/sendAlerts');
+
 // Data
 const sampleResponse = require('./testdata/sampleResponse');
 const crimeDictionary = require('./testdata/crimeDictionary');
@@ -256,5 +263,35 @@ suite('test geography type given by postgis', () => {
     .catch((err) => {
       done(err);
     })
+  });
+});
+
+suite('getAllAlerts function', () => {
+  test('each result has user information', (done) => {
+    getAllAlerts()
+      .then((data) => {
+        delete data[0].created_at;
+        delete data[0].updated_at;
+
+        const dataKeys = Object.keys(data[0]);
+        const expectedKeys = ['id', 'user_id', 'offense_type_id', 'range', 'email', 'username', 'home_lat', 'home_lng']
+
+        assert.deepEqual(dataKeys, expectedKeys);
+        done()
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test('should return 12 results', () => {
+    getAllAlerts()
+      .then((data) => {
+        assert.deepEqual(data.length, 12);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
   });
 });
