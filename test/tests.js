@@ -309,6 +309,7 @@ suite('checkForMatches function', () => {
         return Promise.all(res);
       })
       .then((data) => {
+        console.log(data);
         assert.deepEqual(JSON.stringify(data[1].rows[0]), JSON.stringify({
           id: 7,
           general_offense_number: '201776304',

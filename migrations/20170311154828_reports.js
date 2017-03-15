@@ -24,6 +24,7 @@ exports.up = function(knex) {
       hundred_block varchar(255),
       district_sector varchar(255),
       zone_beat varchar(255),
+      new boolean DEFAULT true,
       created_at timestamp,
       updated_at timestamp
     )

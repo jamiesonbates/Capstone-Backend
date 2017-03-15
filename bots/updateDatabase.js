@@ -124,6 +124,7 @@ const identifyNewDataAndInsert = function(report) {
               specific_offense_code,
               specific_offense_code_extension,
               specific_offense_type, zone_beat,
+              new,
               created_at,
               updated_at)
             VALUES (
@@ -135,6 +136,7 @@ const identifyNewDataAndInsert = function(report) {
               '${report.date_occurred}',
               ${report.specific_offense_code}, ${report.specific_offense_code_extension}, '${report.specific_offense_type}',
               '${report.zone_beat}',
+              true,
               '${moment().format('YYYY-MM-DDTHH:mm:ss.SSS')}',
               '${moment().format('YYYY-MM-DDTHH:mm:ss.SSS')}')
           `)
