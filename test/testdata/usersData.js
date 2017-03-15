@@ -14,6 +14,13 @@ const usersData = [
     username: 'kazmatthizzle',
     home_lng: '-122.326560',
     home_lat: '47.617756'
+  },
+  {
+    id: 3,
+    email: 'fakeemail@fake.com',
+    username: 'fakeaccount',
+    home_lng: '-122.326560',
+    home_lat: '47.617756'
   }
 ];
 

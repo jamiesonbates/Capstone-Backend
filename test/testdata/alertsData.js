@@ -63,8 +63,8 @@ const alertsData = [
   },
   {
     id: 11,
-    user_id: 1,
-    offense_type_id: 10,
+    user_id: 3,
+    offense_type_id: 11,
     range: 200
   },
   {

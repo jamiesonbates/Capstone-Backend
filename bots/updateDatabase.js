@@ -38,8 +38,8 @@ const getCrimeDictionary = function() {
 // Remove unneeded fields, alter some key names, filter by type of crime
 const prepareDataForConsumption = function(reports, crimeDictionary) {
   const filteredReports = reports.filter(report => {
-    for (const offense of crimeDictionary) {
-      const offenseType = offense.summarizedOffenseType;
+    for (const offense of decamelizeKeys(crimeDictionary)) {
+      const offenseType = offense.summarized_offense_type;
       const reportType =  report.summarized_offense_description;
 
       if (offenseType === reportType) {
@@ -70,7 +70,8 @@ const prepareDataForConsumption = function(reports, crimeDictionary) {
       }
     }
   });
-  
+
+  console.log(filteredReports);
   return filteredReports;
 };
 
@@ -232,15 +233,18 @@ const runDatabaseJob = function() {
       return getPoliceReports(12);
     })
     .then((data) => {
+      console.log(data.length);
       console.log('prepareDataForConsumption');
       return prepareDataForConsumption(data, crimeDictionary);
     })
     .then((data) => {
+      console.log(data.length);
       console.log('removeDuplicateReports');
       return removeDuplicateReports(data);
     })
     .then((data) => {
       dataFromAPI = data;
+      console.log(dataFromAPI.length);
       console.log('getDataWithinDateRange');
       return getDataWithinDateRange();
     })

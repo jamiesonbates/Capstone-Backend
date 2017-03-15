@@ -2,6 +2,11 @@
 
 // Dependencies
 const knex = require('../knex');
+const Mailgun = require('mailgun-js');
+
+// Mailgun
+const apiKey = 'key-349865de11233134cfbc2b57c333b0b2';
+const domain = 'sandbox2a79e8a13e9b429486e37c1dc03de4d8.mailgun.org';
 
 // Get all alerts + matching user from DB
 const getAllAlerts = function() {
@@ -28,6 +33,7 @@ const checkForMatches = function(alert) {
   return promise;
 }
 
+// Group all alerts by user
 const mapMatchesToUsers = function(matches) {
   const matchesByUser = matches.reduce((acc, match) => {
     const userId = match.user_id;
@@ -46,8 +52,10 @@ const mapMatchesToUsers = function(matches) {
 }
 
 // Send alerts that matched with new data
-const sendAlertsFromMatches = function() {
+const sendAlertsFromMatches = function(matchesByUser) {
+  for (const user in matchesByUser) {
 
+  }
 }
 
 // This job will get alerts, find matches, and send alerts
@@ -76,7 +84,25 @@ const sendAlertsJob = function() {
       return mapMatchesToUsers(matches);
     })
     .then((matchesByUser) => {
-      console.log(matchesByUser);
+      for (const user in matchesByUser) {
+        const mailgun = new Mailgun({ apiKey, domain });
+
+        const data = {
+          from: 'jamiesonbates@gmail.com',
+          to: 'jamiesonbates@gmail.com',
+          subject: 'Does this work?',
+          html: `${matchesByUser[user].reports.length} crimes occurred nearby.`
+        }
+
+        mailgun.messages().send(data, (err, body) => {
+          if (err) {
+            console.log('got an error', err);
+          }
+          else {
+            console.log(body);
+          }
+        })
+      }
     });
 }
 
@@ -84,5 +110,6 @@ module.exports = {
   sendAlertsJob,
   getAllAlerts,
   checkForMatches,
+  mapMatchesToUsers,
   sendAlertsFromMatches
 };
