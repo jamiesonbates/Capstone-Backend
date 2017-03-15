@@ -8,8 +8,8 @@ exports.up = function(knex) {
       .notNullable()
       .unique();
     table.string('username');
-    table.float('home_lat');
-    table.float('home_lng');
+    table.string('home_lat');
+    table.string('home_lng');
     table.timestamps(true, true);
   });
 };

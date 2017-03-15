@@ -6,7 +6,7 @@ const updateDatabase = require('./bots/updateDatabase');
 const sendAlerts = require('./bots/sendAlerts');
 
 new CronJob('*/1 * * * * *',
-  updateDatabase.runDatabaseJob(),
+  sendAlerts.sendAlertsJob(),
   null,
   true,
   'America/Los_Angeles'

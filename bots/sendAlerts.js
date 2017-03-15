@@ -12,11 +12,13 @@ const getAllAlerts = function() {
 const checkForMatches = function(alert) {
   const promise = new Promise((resolve, reject) => {
     return knex.raw(`
-      SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(${alert.home_lng}, ${alert.home_lat}), ${alert.range}) AND police_reports.new = true AND police_reports.offense_type_id = ${alert.offense_type_id};
+      SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(${parseFloat(alert.home_lng)}, ${parseFloat(alert.home_lat)}), ${alert.range}) AND police_reports.new = true AND police_reports.offense_type_id = ${alert.offense_type_id};
     `)
     .then((data) => {
       if (data.rows.length) {
-        resolve(data.rows);
+        const mergedData = alert;
+        mergedData.reports = data.rows;
+        resolve(mergedData);
       }
 
       resolve(false);
@@ -24,6 +26,23 @@ const checkForMatches = function(alert) {
   });
 
   return promise;
+}
+
+const mapMatchesToUsers = function(matches) {
+  const matchesByUser = matches.reduce((acc, match) => {
+    const userId = match.user_id;
+
+    if (!acc.hasOwnProperty(userId)) {
+      acc[userId] = match;
+    }
+    else {
+      acc[userId].reports = acc[userId].reports.concat(match.reports);
+    }
+
+    return acc;
+  }, {});
+
+  return matchesByUser;
 }
 
 // Send alerts that matched with new data
@@ -44,9 +63,20 @@ const sendAlertsJob = function() {
       return Promise.all(res);
     })
     .then((data) => {
-      for (const row of data) {
-        
+      const matches = [];
+      for (const result of data) {
+        if (result) {
+          matches.push(result);
+        }
       }
+
+      return matches;
+    })
+    .then((matches) => {
+      return mapMatchesToUsers(matches);
+    })
+    .then((matchesByUser) => {
+      console.log(matchesByUser);
     });
 }
 

@@ -7,6 +7,13 @@ const usersData = [
     username: 'jamiesonbates',
     home_lng: '-122.326560',
     home_lat: '47.617756'
+  },
+  {
+    id: 2,
+    email: 'jamiebbates@gmail.com',
+    username: 'kazmatthizzle',
+    home_lng: '-122.326560',
+    home_lat: '47.617756'
   }
 ];
 
