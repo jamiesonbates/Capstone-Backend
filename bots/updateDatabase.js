@@ -6,9 +6,6 @@ const { camelizeKeys, decamelizeKeys } = require('humps');
 const knex = require('../knex');
 const moment = require('moment');
 
-// Data
-// const crimeDictionary = require('../test/testdata/crimeDictionary');
-
 // Delete reports that are older than 1 year old
 const deleteOldReports = function() {
   const now = moment();
@@ -39,43 +36,42 @@ const getCrimeDictionary = function() {
 }
 
 // Remove unneeded fields, alter some key names, filter by type of crime
-const prepareDataForConsumption = function(reports) {
-  return getCrimeDictionary()
-    .then((crimeDictionary) => {
-      const filteredReports = reports.filter(report => {
-        for (const offense of crimeDictionary) {
-          // console.log(offense.summarized_offense_type);
-          if (offense.summarized_offense_type === report.summarized_offense_description) {
-            report.offense_type_id = offense.id;
+const prepareDataForConsumption = function(reports, crimeDictionary) {
+  const filteredReports = reports.filter(report => {
+    for (const offense of crimeDictionary) {
+      const offenseType = offense.summarizedOffenseType;
+      const reportType =  report.summarized_offense_description;
 
-            delete report.census_tract_2000;
-            delete report.location;
-            delete report.month;
-            delete report.rms_cdw_id;
-            delete report.summarized_offense_description;
-            delete report.summary_offense_code;
-            delete report.year;
-            delete report.occurred_date_range_end;
+      if (offenseType === reportType) {
+        report.offense_type_id = offense.id;
 
-            report.hundred_block = report.hundred_block_location;
-            report.date_occurred = report.occurred_date_or_date_range_start;
-            report.specific_offense_type = report.offense_type;
-            report.specific_offense_code = report.offense_code;
-            report.specific_offense_code_extension = report.offense_code_extension;
+        delete report.census_tract_2000;
+        delete report.location;
+        delete report.month;
+        delete report.rms_cdw_id;
+        delete report.summarized_offense_description;
+        delete report.summary_offense_code;
+        delete report.year;
+        delete report.occurred_date_range_end;
 
-            delete report.hundred_block_location;
-            delete report.occurred_date_or_date_range_start;
-            delete report.offense_type;
-            delete report.offense_code;
-            delete report.offense_code_extension;
+        report.hundred_block = report.hundred_block_location;
+        report.date_occurred = report.occurred_date_or_date_range_start;
+        report.specific_offense_type = report.offense_type;
+        report.specific_offense_code = report.offense_code;
+        report.specific_offense_code_extension = report.offense_code_extension;
 
-            return report;
-          }
-        }
-      });
+        delete report.hundred_block_location;
+        delete report.occurred_date_or_date_range_start;
+        delete report.offense_type;
+        delete report.offense_code;
+        delete report.offense_code_extension;
 
-      return filteredReports;
-    });
+        return report;
+      }
+    }
+  });
+  
+  return filteredReports;
 };
 
 // Remove duplicate reports given by API (unique key is general_offense_number)
@@ -117,8 +113,6 @@ const identifyNewDataAndInsert = function(report) {
           if (report.specific_offense_code === 'X') {
             report.specific_offense_code = null;
           }
-
-          console.log(report);
 
           return knex.raw(`
             INSERT INTO police_reports (
@@ -163,7 +157,7 @@ const identifyNewDataAndInsert = function(report) {
         resolve();
       })
       .catch((err) => {
-        // console.error(err);
+        console.error(err);
         reject();
       });
   });
@@ -225,15 +219,21 @@ const updateAlteredData = function(report) {
 const runDatabaseJob = function() {
   let dataFromAPI;
   let dataFromDB;
+  let crimeDictionary;
   console.log('deleteOldReports');
   return deleteOldReports()
     .then(() => {
+      console.log(getCrimeDictionary);
+      return getCrimeDictionary();
+    })
+    .then((data) => {
+      crimeDictionary = data;
       console.log('getPoliceReports');
       return getPoliceReports(12);
     })
     .then((data) => {
       console.log('prepareDataForConsumption');
-      return prepareDataForConsumption(data);
+      return prepareDataForConsumption(data, crimeDictionary);
     })
     .then((data) => {
       console.log('removeDuplicateReports');
@@ -275,14 +275,13 @@ const runDatabaseJob = function() {
       console.log('Failure :(');
       console.error(err);
     });
-
-
 }
 
 module.exports = {
   runDatabaseJob,
   deleteOldReports,
   getPoliceReports,
+  getCrimeDictionary,
   prepareDataForConsumption,
   getDataWithinDateRange,
   removeDuplicateReports,

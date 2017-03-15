@@ -13,6 +13,7 @@ const { suite, test } = require('mocha');
 const {
   getPoliceReports,
   deleteOldReports,
+  getCrimeDictionary,
   prepareDataForConsumption,
   getDataWithinDateRange,
   removeDuplicateReports,
@@ -51,8 +52,42 @@ suite('getPoliceReports function', () => {
     getPoliceReports(1)
       .then((results) => {
         delete results[0].occurred_date_range_end;
-        delete sampleResponse[0].occurred_date_range_end;
-        assert.deepEqual(Object.keys(results[0]), Object.keys(sampleResponse[0]));
+        const resultKeys = Object.keys(results[0]);
+        const expectedKeys = [
+          'census_tract_2000',
+          'date_reported',
+          'district_sector',
+          'general_offense_number',
+          'hundred_block_location',
+          'latitude',
+          'location',
+          'longitude',
+          'month',
+          'occurred_date_or_date_range_start',
+          'offense_code',
+          'offense_code_extension',
+          'offense_type',
+          'rms_cdw_id',
+          'summarized_offense_description',
+          'summary_offense_code',
+          'year',
+          'zone_beat'
+        ];
+
+        assert.deepEqual(resultKeys, expectedKeys);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});
+
+suite('getCrimeDictionary function', () => {
+  test('gets all offense types from the database', (done) => {
+    getCrimeDictionary()
+      .then((data) => {
+        assert.deepEqual(camelizeKeys(data), crimeDictionary);
         done();
       })
       .catch((err) => {
@@ -62,7 +97,7 @@ suite('getPoliceReports function', () => {
 });
 
 suite('prepareDataForConsumption function', () => {
-  const results = prepareDataForConsumption(sampleResponse);
+  const results = prepareDataForConsumption(sampleResponse, crimeDictionary);
 
   test('takes in array of objects and filters based on dictionary', (done) => {
     assert.deepEqual(results, filteredResults);
@@ -135,6 +170,7 @@ suite('identifyNewDataAndInsert function', () => {
           delete row.date_occurred;
           delete row.date_reported;
           delete row.location;
+          delete row.new;
 
           row.latitude = parseFloat(row.latitude);
           row.longitude = parseFloat(row.longitude);
@@ -197,9 +233,10 @@ suite('identifyAlteredDataAndUpdate', () => {
             data[1].longitude = parseFloat(data[1].longitude);
             delete data[0].location;
             delete data[1].location;
+            delete data[0].new;
+            delete data[1].new;
 
-            assert.deepEqual(JSON.stringify(data[0]), JSON.stringify({
-              // date_reported: '2017-03-01T11:25:00.000',
+            assert.deepEqual(data[0], {
               general_offense_number: '201773977',
               offense_type_id: 1,
               specific_offense_code: 2404,
@@ -207,25 +244,22 @@ suite('identifyAlteredDataAndUpdate', () => {
               specific_offense_type: 'VEH-THEFT-AUTO',
               longitude: -122.387863159,
               latitude: 47.581176758,
-              hundred_block: '44 AV NW / SW ADMIRAL WY',
+              hundred_block: '44 AV SW / SW ADMIRAL WY',
               district_sector: 'W',
-              // date_occurred: '2017-02-28T21:00:00.000',
               zone_beat: 'W1'
-            }));
-            assert.deepEqual(JSON.stringify(data[1]), JSON.stringify({
-              // date_reported: '2017-03-01T17:33:00.000',
+            });
+            assert.deepEqual(data[1], {
               general_offense_number: '201774471',
               offense_type_id: 1,
               specific_offense_code: 2404,
               specific_offense_code_extension: 1,
               specific_offense_type: 'VEH-THEFT-AUTO',
-              longitude: -122.37664032,
-              latitude: 47.528282166,
-              hundred_block: '35 AVE SW / SW THISTLE ST',
+              longitude: -122.387863159,
+              latitude: 47.581176758,
+              hundred_block: '35 AV SW / SW THISTLE ST',
               district_sector: 'F',
-              // date_occurred: '2017-03-01T06:40:00.000',
               zone_beat: 'F2'
-            }));
+            });
             done();
           })
           .catch((err) => {
@@ -305,20 +339,21 @@ suite('checkForMatches function', () => {
         for (const report of data) {
           res.push(checkForMatches(report));
         }
-        console.log(res);
+
         return Promise.all(res);
       })
       .then((data) => {
-        console.log(data);
-        assert.deepEqual(JSON.stringify(data[1].rows[0]), JSON.stringify({
+        delete data[1].rows[0].date_occurred;
+        delete data[1].rows[0].date_reported;
+        delete data[1].rows[0].new;
+
+        assert.deepEqual(data[1].rows[0], {
           id: 7,
           general_offense_number: '201776304',
           offense_type_id: 4,
           specific_offense_code: 3542,
           specific_offense_code_extension: 1,
           specific_offense_type: 'NARC-POSSESS-METH',
-          date_reported: '2017-03-03T10:26:00.000Z',
-          date_occurred: '2017-03-03T10:26:00.000Z',
           longitude: '-122.344490051',
           latitude: '47.682769775',
           location: '0101000020E6100000A20BEA5BE6945EC03274ECA012CF4740',
@@ -327,7 +362,7 @@ suite('checkForMatches function', () => {
           zone_beat: 'J3',
           created_at: null,
           updated_at: null
-        }));
+        });
         done();
       })
       .catch((err) => {
