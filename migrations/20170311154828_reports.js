@@ -6,7 +6,7 @@ exports.up = function(knex) {
       id
         SERIAL
         PRIMARY KEY,
-      general_offense_number integer
+      general_offense_number bigint
         NOT NULL
         UNIQUE,
       offense_type_id integer
