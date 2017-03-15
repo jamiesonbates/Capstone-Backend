@@ -5,7 +5,7 @@ const alertsData = [
     id: 1,
     user_id: 1,
     offense_type_id: 1,
-    range: 5000
+    range: 200
   },
   {
     id: 2,
