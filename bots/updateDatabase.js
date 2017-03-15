@@ -7,7 +7,7 @@ const knex = require('../knex');
 const moment = require('moment');
 
 // Data
-const crimeDictionary = require('../test/testdata/crimeDictionary');
+// const crimeDictionary = require('../test/testdata/crimeDictionary');
 
 // Delete reports that are older than 1 year old
 const deleteOldReports = function() {
@@ -21,7 +21,7 @@ const deleteOldReports = function() {
 
 // Get police reports from API within "length" months
 const getPoliceReports = function(length) {
-  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$limit=50000&$where=date_reported >`;
+  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$limit=5000&$where=date_reported >`;
   const oneMonthAgo = moment().subtract(length, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
   const url = `${base} '${oneMonthAgo}'`;
 
@@ -34,41 +34,49 @@ const getPoliceReports = function(length) {
     });
 };
 
+const getCrimeDictionary = function() {
+  return knex('offense_types');
+}
+
 // Remove unneeded fields, alter some key names, filter by type of crime
 const prepareDataForConsumption = function(reports) {
-  const filteredReports = reports.filter(report => {
-    for (const offense of crimeDictionary) {
-      if (offense.summarizedOffenseType === report.summarized_offense_description) {
-        report.offense_type_id = offense.id;
+  return getCrimeDictionary()
+    .then((crimeDictionary) => {
+      const filteredReports = reports.filter(report => {
+        for (const offense of crimeDictionary) {
+          // console.log(offense.summarized_offense_type);
+          if (offense.summarized_offense_type === report.summarized_offense_description) {
+            report.offense_type_id = offense.id;
 
-        delete report.census_tract_2000;
-        delete report.location;
-        delete report.month;
-        delete report.rms_cdw_id;
-        delete report.summarized_offense_description;
-        delete report.summary_offense_code;
-        delete report.year;
-        delete report.occurred_date_range_end;
+            delete report.census_tract_2000;
+            delete report.location;
+            delete report.month;
+            delete report.rms_cdw_id;
+            delete report.summarized_offense_description;
+            delete report.summary_offense_code;
+            delete report.year;
+            delete report.occurred_date_range_end;
 
-        report.hundred_block = report.hundred_block_location;
-        report.date_occurred = report.occurred_date_or_date_range_start;
-        report.specific_offense_type = report.offense_type;
-        report.specific_offense_code = report.offense_code;
-        report.specific_offense_code_extension = report.offense_code_extension;
+            report.hundred_block = report.hundred_block_location;
+            report.date_occurred = report.occurred_date_or_date_range_start;
+            report.specific_offense_type = report.offense_type;
+            report.specific_offense_code = report.offense_code;
+            report.specific_offense_code_extension = report.offense_code_extension;
 
-        delete report.hundred_block_location;
-        delete report.occurred_date_or_date_range_start;
-        delete report.offense_type;
-        delete report.offense_code;
-        delete report.offense_code_extension;
+            delete report.hundred_block_location;
+            delete report.occurred_date_or_date_range_start;
+            delete report.offense_type;
+            delete report.offense_code;
+            delete report.offense_code_extension;
 
-        return report;
-      }
-    }
-  });
+            return report;
+          }
+        }
+      });
 
-  return filteredReports;
-}
+      return filteredReports;
+    });
+};
 
 // Remove duplicate reports given by API (unique key is general_offense_number)
 const removeDuplicateReports = function(reports) {
@@ -110,6 +118,8 @@ const identifyNewDataAndInsert = function(report) {
             report.specific_offense_code = null;
           }
 
+          console.log(report);
+
           return knex.raw(`
             INSERT INTO police_reports (
               date_reported,
@@ -123,22 +133,27 @@ const identifyNewDataAndInsert = function(report) {
               date_occurred,
               specific_offense_code,
               specific_offense_code_extension,
-              specific_offense_type, zone_beat,
+              specific_offense_type,
+              zone_beat,
               new,
               created_at,
-              updated_at)
+              updated_at
+            )
             VALUES (
               '${report.date_reported}',
-              '${report.district_sector}', ${report.general_offense_number},
+              '${report.district_sector}',
+              ${report.general_offense_number},
               '${report.hundred_block}',
-              ${report.offense_type_id}, ${report.latitude},
+              ${report.offense_type_id},
+              ${report.latitude},
               ${report.longitude}, ST_GeographyFromText('SRID=4326;POINT(${report.longitude} ${report.latitude})'),
               '${report.date_occurred}',
               ${report.specific_offense_code}, ${report.specific_offense_code_extension}, '${report.specific_offense_type}',
               '${report.zone_beat}',
-              true,
+              ${true},
               '${moment().format('YYYY-MM-DDTHH:mm:ss.SSS')}',
-              '${moment().format('YYYY-MM-DDTHH:mm:ss.SSS')}')
+              '${moment().format('YYYY-MM-DDTHH:mm:ss.SSS')}'
+            )
           `)
         }
 
@@ -148,7 +163,7 @@ const identifyNewDataAndInsert = function(report) {
         resolve();
       })
       .catch((err) => {
-        console.error(err);
+        // console.error(err);
         reject();
       });
   });

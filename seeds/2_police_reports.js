@@ -4,7 +4,21 @@ exports.seed = function(knex) {
   return knex('police_reports').del()
     .then(() => {
       return knex.raw(`
-        INSERT INTO police_reports (id, date_reported, district_sector, general_offense_number, hundred_block, longitude, latitude, location, date_occurred, specific_offense_code, specific_offense_code_extension, specific_offense_type, offense_type_id, zone_beat)
+        INSERT INTO police_reports (
+          id,
+          date_reported,
+          district_sector,
+          general_offense_number,
+          hundred_block, 
+          longitude,
+          latitude,
+          location,
+          date_occurred,
+          specific_offense_code,
+          specific_offense_code_extension,
+          specific_offense_type,
+          offense_type_id,
+          zone_beat)
         VALUES
           (1, '2017-03-01T11:25:00.000', 'W', 201773977, '44 AV SW / SW ADMIRAL WY', -122.387863159, 47.581176758, ST_GeographyFromText('SRID=4326;POINT(-122.387863159 47.581176758)'), '2017-02-28T21:00:00.000', 2404, 1, 'VEH-THEFT-AUTO', 1, 'W1'),
           (2, '2017-03-01T17:33:00.000', 'F', 201774471, '35 AV SW / SW THISTLE ST', -122.387863159, 47.581176758, ST_GeographyFromText('SRID=4326;POINT(-122.387863159 47.581176758)'), '2017-03-01T06:40:00.000', 2404, 1, 'VEH-THEFT-AUTO', 1, 'F2'),
