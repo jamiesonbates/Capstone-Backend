@@ -11,67 +11,67 @@ const alertsData = [
     id: 2,
     user_id: 1,
     offense_type_id: 2,
-    range: 4000
+    range: 200
   },
   {
     id: 3,
     user_id: 1,
     offense_type_id: 3,
-    range: 3000
+    range: 200
   },
   {
     id: 4,
     user_id: 1,
     offense_type_id: 4,
-    range: 3500
+    range: 200
   },
   {
     id: 5,
     user_id: 1,
     offense_type_id: 5,
-    range: 4500
+    range: 200
   },
   {
     id: 6,
     user_id: 1,
     offense_type_id: 6,
-    range: 5500
+    range: 200
   },
   {
     id: 7,
     user_id: 1,
     offense_type_id: 7,
-    range: 6000
+    range: 200
   },
   {
     id: 8,
     user_id: 1,
     offense_type_id: 8,
-    range: 6500
+    range: 200
   },
   {
     id: 9,
     user_id: 1,
     offense_type_id: 9,
-    range: 7000
+    range: 200
   },
   {
     id: 10,
     user_id: 1,
     offense_type_id: 10,
-    range: 3250
+    range: 200
   },
   {
     id: 11,
     user_id: 1,
     offense_type_id: 11,
-    range: 4250
+    range: 300
   },
   {
     id: 12,
     user_id: 1,
     offense_type_id: 12,
-    range: 4750
+    range: 200
   }
 ];
 

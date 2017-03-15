@@ -14,6 +14,9 @@ const checkForMatches = function(alert) {
     return knex.raw(`
       SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(${alert.home_lng}, ${alert.home_lat}), ${alert.range});
     `)
+      .then((data) => {
+        resolve(data);
+      });
   });
 
   return promise;
