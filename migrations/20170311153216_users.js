@@ -8,6 +8,9 @@ exports.up = function(knex) {
       .notNullable()
       .unique();
     table.string('username');
+    table
+      .specificType('hashed_password', 'char(60)')
+      .notNullable();
     table.string('home_lat');
     table.string('home_lng');
     table.timestamps(true, true);
