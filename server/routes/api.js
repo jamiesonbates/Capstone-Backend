@@ -24,31 +24,28 @@ const {
   updateAlteredData
 } = require('../../bots/updateDatabase');
 
-router.get('/', (req, res) => {
-  res.send('Hi from API!!!');
-});
-
-router.get('/police_reports/:lat/:lng/:range', (req, res) => {
+router.get('/police_reports/:lat/:lng/:range', (req, res, next) => {
   knex.raw(`
     SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(${parseFloat(req.params.lng)}, ${parseFloat(req.params.lat)}), ${req.params.range})
   `)
   .then((data) => {
     res.send(data.rows);
-  });
+  })
+  .catch((err) => {
+    next(err);
+  })
 });
 
-router.get('/runjob', (req, res) => {
+router.get('/runjob', (req, res, next) => {
   runDatabaseJob()
     .then(() => {
       sendAlertsJob();
     })
     .then(() => {
-      console.log('Job was successful');
       res.send(true);
     })
     .catch((err) => {
-      console.error(err);
-      res.send(false);
+      next(err);
     });
 });
 
