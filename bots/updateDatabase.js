@@ -18,7 +18,7 @@ const deleteOldReports = function() {
 
 // Get police reports from API within "length" months
 const getPoliceReports = function(length) {
-  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$limit=5000&$where=date_reported >`;
+  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$limit=9000&$where=date_reported >`;
   const oneMonthAgo = moment().subtract(length, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
   const url = `${base} '${oneMonthAgo}'`;
 
