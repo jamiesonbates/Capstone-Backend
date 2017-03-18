@@ -28,6 +28,15 @@ router.get('/', (req, res) => {
   res.send('Hi from API!!!');
 });
 
+router.get('/police_reports/:lat/:lng/:range', (req, res) => {
+  knex.raw(`
+    SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(${parseFloat(req.params.lng)}, ${parseFloat(req.params.lat)}), ${req.params.range})
+  `)
+  .then((data) => {
+    res.send(data.rows);
+  });
+});
+
 router.get('/runjob', (req, res) => {
   runDatabaseJob()
     .then(() => {
