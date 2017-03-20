@@ -28,6 +28,18 @@ const {
   updateAlteredData
 } = require('../../bots/updateDatabase');
 
+const authorize = function(req, res, next) {
+  jwt.verify(req.cookies.token, process.env.JWT_KEY, (err, payload) => {
+    if (err) {
+      return next(boom.create(401, 'Unauthorized'));
+    }
+
+    req.claim = payload;
+
+    next();
+  });
+};
+
 router.get('/police_reports/:lat/:lng/:range', (req, res, next) => {
   knex.raw(`
     SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(${parseFloat(req.params.lng)}, ${parseFloat(req.params.lat)}), ${req.params.range})
