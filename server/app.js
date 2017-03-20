@@ -24,4 +24,17 @@ app.use((req, res, next) => {
 
 app.use('/api', require('./routes/api'));
 
+app.use((err, _req, res, _next) => {
+  if (err.output && err.output.statusCode) {
+    return res
+      .status(err.output.statusCode)
+      .set('Content-Type', 'text/plain')
+      .send(err.message);
+  }
+
+  // eslint-disable-next-line no-console
+  console.error(err.stack);
+  res.sendStatus(500);
+});
+
 module.exports = app;
