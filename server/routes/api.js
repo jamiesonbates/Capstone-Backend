@@ -208,7 +208,18 @@ router.get('/alerts/:userId', (req, res) => {
     })
     .catch((err) => {
       next(err);
-    })
+    });
 });
+
+router.get('/locations/:userId', (req, res) => {
+  knex('user_alert_locations')
+    .where('user_id', req.params.userId)
+    .then((locations) => {
+      res.send(locations)
+    })
+    .catch((err) => {
+      next(err);
+    });
+})
 
 module.exports = router;
