@@ -30,7 +30,10 @@ const {
 
 router.get('/police_reports/:lat/:lng/:range', (req, res, next) => {
   knex.raw(`
-    SELECT * FROM police_reports WHERE ST_DWithin(police_reports.location, ST_POINT(${parseFloat(req.params.lng)}, ${parseFloat(req.params.lat)}), ${req.params.range})
+    SELECT *
+    FROM police_reports
+    INNER JOIN offense_types ON police_reports.offense_type_id = offense_types.id
+    WHERE ST_DWithin(police_reports.location, ST_POINT(${parseFloat(req.params.lng)}, ${parseFloat(req.params.lat)}), ${req.params.range})
   `)
   .then((data) => {
     res.send(data.rows);
@@ -194,6 +197,18 @@ router.post('/token', (req, res, next) => {
 router.delete('/token', (req, res) => {
   res.clearCookie('token');
   res.send(false);
+});
+
+router.get('/alerts/:userId', (req, res) => {
+  knex('alerts')
+    .innerJoin('offense_types', 'alerts.offense_type_id', 'offense_types.id')
+    .where('alerts.user_id', req.params.userId)
+    .then((alerts) => {
+      res.send(alerts);
+    })
+    .catch((err) => {
+      next(err);
+    })
 });
 
 module.exports = router;
