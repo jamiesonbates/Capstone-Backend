@@ -11,6 +11,13 @@ exports.up = function(knex) {
       .onDelete('CASCADE')
       .index();
     table
+      .integer('user_alert_location_id')
+      .references('id')
+      .inTable('user_alert_locations')
+      .notNullable()
+      .onDelete('CASCADE')
+      .index();
+    table
       .integer('offense_type_id')
       .references('id')
       .inTable('offense_types')
