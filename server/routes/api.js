@@ -56,7 +56,7 @@ router.get('/runjob', (req, res, next) => {
 const authorize = function(req, res, next) {
   jwt.verify(req.cookies.token, process.env.JWT_KEY, (err, payload) => {
     if (err) {
-      return next(boom.create(401, 'Unauthorized'));
+      throw next(boom.create(401, 'Unauthorized'));
     }
 
     req.claim = payload;
