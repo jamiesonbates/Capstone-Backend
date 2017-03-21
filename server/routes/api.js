@@ -87,7 +87,7 @@ router.get('/users', authorize, (req, res, next) => {
 });
 
 router.post('/users', (req, res, next) => {
-  const { email, username, password, home_lat, home_lng } = req.body;
+  const { email, username, password } = req.body;
 
   if (!email || !email.trim()) {
     return next(boom.create(400, 'Email must not be blank'));
@@ -109,7 +109,7 @@ router.post('/users', (req, res, next) => {
     })
     .then((hashedPassword) => {
       return knex('users')
-        .insert(decamelizeKeys({ email, username, hashedPassword, home_lat, home_lng}), '*');
+        .insert(decamelizeKeys({ email, username, hashedPassword}), '*');
     })
     .then((users) => {
       const user = camelizeKeys(users[0]);
@@ -216,6 +216,16 @@ router.get('/locations/:userId', (req, res) => {
     .where('user_id', req.params.userId)
     .then((locations) => {
       res.send(locations)
+    })
+    .catch((err) => {
+      next(err);
+    });
+})
+
+router.get('/offenseTypes', (req, res) => {
+  knex('offense_types')
+    .then((offenseTypes) => {
+      res.send(offenseTypes)
     })
     .catch((err) => {
       next(err);
