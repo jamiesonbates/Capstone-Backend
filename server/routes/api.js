@@ -201,9 +201,11 @@ router.delete('/token', (req, res) => {
 
 router.get('/alerts/:userId', (req, res, next) => {
   knex('alerts')
+    .select('alerts.id', 'alerts.user_id', 'alerts.user_alert_location_id', 'alerts.offense_type_id', 'alerts.range', 'offense_types.offense_name')
     .innerJoin('offense_types', 'alerts.offense_type_id', 'offense_types.id')
     .where('alerts.user_id', req.params.userId)
     .then((alerts) => {
+      console.log(alerts);
       res.send(alerts);
     })
     .catch((err) => {
@@ -227,6 +229,20 @@ router.post('/alerts', (req, res, next) => {
     next(err);
   })
 })
+
+router.delete('/alerts/:id', (req, res, next) => {
+  console.log(req.params.id);
+  knex('alerts')
+    .del()
+    .where('id', req.params.id)
+    .returning('*')
+    .then((alert) => {
+      res.send(alert);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
 
 router.get('/locations/:userId', (req, res, next) => {
   knex('user_alert_locations')
