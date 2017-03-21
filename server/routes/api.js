@@ -199,7 +199,7 @@ router.delete('/token', (req, res) => {
   res.send(false);
 });
 
-router.get('/alerts/:userId', (req, res) => {
+router.get('/alerts/:userId', (req, res, next) => {
   knex('alerts')
     .innerJoin('offense_types', 'alerts.offense_type_id', 'offense_types.id')
     .where('alerts.user_id', req.params.userId)
@@ -211,7 +211,24 @@ router.get('/alerts/:userId', (req, res) => {
     });
 });
 
-router.get('/locations/:userId', (req, res) => {
+router.post('/alerts', (req, res, next) => {
+  const { user_id, user_alert_location_id, offense_type_id, range } = req.body;
+
+  knex('alerts').insert({
+    user_id,
+    user_alert_location_id,
+    offense_type_id,
+    range
+  }, '*')
+  .then((alert) => {
+    res.send(alert);
+  })
+  .catch((err) => {
+    next(err);
+  })
+})
+
+router.get('/locations/:userId', (req, res, next) => {
   knex('user_alert_locations')
     .where('user_id', req.params.userId)
     .then((locations) => {
@@ -222,10 +239,42 @@ router.get('/locations/:userId', (req, res) => {
     });
 })
 
-router.get('/offenseTypes', (req, res) => {
+router.get('/offenseTypes', (req, res, next) => {
   knex('offense_types')
     .then((offenseTypes) => {
       res.send(offenseTypes)
+    })
+    .catch((err) => {
+      next(err);
+    });
+})
+
+router.post('/locations', (req, res, next) => {
+  const { user_id, location_title, location, lat, lng } = req.body
+  knex('user_alert_locations').insert({
+    user_id,
+    location_title,
+    location,
+    lat,
+    lng
+  }, '*')
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => {
+    next(err);
+  });
+})
+
+router.delete('/locations/:id', (req, res, next) => {
+  console.log(req.params.id);
+  knex('user_alert_locations')
+    .del()
+    .where('id', req.params.id)
+    .returning('*')
+    .then((data) => {
+      console.log(data);
+      res.send(data);
     })
     .catch((err) => {
       next(err);
