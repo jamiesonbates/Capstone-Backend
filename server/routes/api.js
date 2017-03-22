@@ -275,7 +275,7 @@ router.post('/locations', (req, res, next) => {
     lng
   }, '*')
   .then((data) => {
-    console.log(data);
+    res.send(data);
   })
   .catch((err) => {
     next(err);
