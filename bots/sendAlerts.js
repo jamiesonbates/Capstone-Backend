@@ -105,7 +105,10 @@ const sendAlertsJob = function() {
       }
 
       return;
-    });
+    })
+    .catch((err) => {
+      console.error(err);
+    })
 }
 
 module.exports = {
