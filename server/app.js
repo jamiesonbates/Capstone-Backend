@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const port = process.env.PORT || 3000;
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 
 const bodyParser = require('body-parser');
 
@@ -13,6 +14,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
+app.user(morgan('dev'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 

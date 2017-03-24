@@ -195,8 +195,9 @@ router.post('/token', (req, res, next) => {
 });
 
 router.delete('/token', (req, res) => {
+  console.log('here');
   res.clearCookie('token');
-  res.send(false);
+  res.send(true);
 });
 
 router.get('/alerts/:userId', (req, res, next) => {
