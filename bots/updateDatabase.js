@@ -245,7 +245,7 @@ const runDatabaseJob = function() {
       dataFromAPI = data;
       console.log(dataFromAPI.length);
       console.log('getDataWithinDateRange');
-      return getDataWithinDateRange();
+      return getDataWithinDateRange(1);
     })
     .then((data) => {
       dataFromDB = data;
