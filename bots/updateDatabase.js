@@ -9,18 +9,18 @@ const moment = require('moment');
 // Delete reports that are older than 1 year old
 const deleteOldReports = function() {
   const now = moment();
-  const oneYearAgo = moment().subtract(1, 'years');
+  const sixMonthsAgo = moment().subtract(6, 'months');
 
   return knex('police_reports')
-    .where('date_occurred', '<', oneYearAgo)
+    .where('date_occurred', '<', sixMonthsAgo)
     .del();
 }
 
 // Get police reports from API within "length" months
 const getPoliceReports = function(length) {
-  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$limit=9000&$where=date_reported >`;
-  const oneMonthAgo = moment().subtract(length, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
-  const url = `${base} '${oneMonthAgo}'`;
+  const base = `https://data.seattle.gov/resource/y7pv-r3kh.json?$limit=50000&$where=date_reported >`;
+  const monthsAgo = moment().subtract(length, 'months').format('YYYY-MM-DDTHH:mm:ss.SSS');
+  const url = `${base} '${monthsAgo}'`;
 
   return axios.get(url)
     .then((res) => {
@@ -229,7 +229,7 @@ const runDatabaseJob = function() {
     .then((data) => {
       crimeDictionary = data;
       console.log('getPoliceReports');
-      return getPoliceReports(12);
+      return getPoliceReports(6);
     })
     .then((data) => {
       console.log(data.length);
