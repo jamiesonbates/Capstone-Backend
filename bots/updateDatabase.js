@@ -244,7 +244,7 @@ const runDatabaseJob = function() {
     .then((data) => {
       crimeDictionary = data;
       console.log('getPoliceReports');
-      return getPoliceReports(1);
+      return getPoliceReports(6);
     })
     .then((data) => {
       console.log(data.length);
