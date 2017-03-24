@@ -98,9 +98,9 @@ const removeDuplicateReports = function(reports) {
 // Get police reports from DB within "length" months
 const getDataWithinDateRange = function(length) {
   const now = moment();
-  const oneMonthAgo = moment().subtract(length, 'months');
+  const monthsAgo = moment().subtract(length, 'months');
 
-  return knex('police_reports').whereBetween('date_reported', [oneMonthAgo, now]);
+  return knex('police_reports').whereBetween('date_reported', [monthsAgo, now]);
 }
 
 // Identify new data and insert into DB
@@ -203,7 +203,22 @@ const identifyAlteredData = function(apiData, dbData) {
 // Update row w/ police report in place if it was found to be altered from API
 const updateAlteredData = function(report) {
   const promise = new Promise((resolve, reject) => {
-    return knex('police_reports').where('id', report.id).update(report)
+    if (!Number.isInteger(parseInt(report.general_offense_number)) || !Number.isInteger(parseInt(report.specific_offense_code)) || !Number.isInteger(parseInt(report.specific_offense_code_extension))) {
+      resolve();
+    }
+
+    return knex('police_reports').where('id', report.id).update({
+      date_reported: report.date_reported,
+      district_sector: report.district_sector,
+      general_offense_number: parseInt(report.general_offense_number),
+      zone_beat: report.zone_beat,
+      hundred_block: report.hundred_block,
+      date_occurred: report.date_occurred,
+      offense_type_id: report.offense_type_id,
+      specific_offense_type: report.specific_offense_type,
+      specific_offense_code: parseInt(report.specific_offense_code),
+      specific_offense_code_extension: parseInt(report.specific_offense_code_extension)
+    })
       .then(() => {
         resolve();
       })
@@ -229,17 +244,17 @@ const runDatabaseJob = function() {
     .then((data) => {
       crimeDictionary = data;
       console.log('getPoliceReports');
-      return getPoliceReports(6);
-    })
-    .then((data) => {
-      console.log(data.length);
-      console.log('prepareDataForConsumption');
-      return prepareDataForConsumption(data, crimeDictionary);
+      return getPoliceReports(1);
     })
     .then((data) => {
       console.log(data.length);
       console.log('removeDuplicateReports');
       return removeDuplicateReports(data);
+    })
+    .then((data) => {
+      console.log(data.length);
+      console.log('prepareDataForConsumption');
+      return prepareDataForConsumption(data, crimeDictionary);
     })
     .then((data) => {
       dataFromAPI = data;
@@ -249,6 +264,7 @@ const runDatabaseJob = function() {
     })
     .then((data) => {
       dataFromDB = data;
+      console.log(dataFromDB.length);
 
       const res = [];
 
@@ -266,7 +282,8 @@ const runDatabaseJob = function() {
       const res = [];
 
       for (const record of toBeUpdated) {
-        res.push(updateAlteredData(res));
+
+        res.push(updateAlteredData(record));
       }
       console.log('updateAlteredData');
       return Promise.all(res);
