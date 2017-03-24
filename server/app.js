@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-app.user(morgan('dev'));
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
