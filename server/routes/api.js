@@ -88,7 +88,6 @@ router.get('/users', authorize, (req, res, next) => {
 
 router.post('/users', (req, res, next) => {
   const { email, username, password } = req.body;
-  console.log(password);
 
   if (!email || !email.trim()) {
     throw next(boom.create(400, 'Email must not be blank'));
@@ -195,7 +194,6 @@ router.post('/token', (req, res, next) => {
 });
 
 router.delete('/token', (req, res) => {
-  console.log('here');
   res.clearCookie('token');
   res.send(true);
 });
@@ -206,7 +204,6 @@ router.get('/alerts/:userId', (req, res, next) => {
     .innerJoin('offense_types', 'alerts.offense_type_id', 'offense_types.id')
     .where('alerts.user_id', req.params.userId)
     .then((alerts) => {
-      console.log(alerts);
       res.send(alerts);
     })
     .catch((err) => {
@@ -232,7 +229,6 @@ router.post('/alerts', (req, res, next) => {
 })
 
 router.delete('/alerts/:id', (req, res, next) => {
-  console.log(req.params.id);
   knex('alerts')
     .del()
     .where('id', req.params.id)
@@ -284,13 +280,11 @@ router.post('/locations', (req, res, next) => {
 })
 
 router.delete('/locations/:id', (req, res, next) => {
-  console.log(req.params.id);
   knex('user_alert_locations')
     .del()
     .where('id', req.params.id)
     .returning('*')
     .then((data) => {
-      console.log(data);
       res.send(data);
     })
     .catch((err) => {
