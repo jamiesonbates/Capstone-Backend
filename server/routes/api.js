@@ -88,13 +88,14 @@ router.get('/users', authorize, (req, res, next) => {
 
 router.post('/users', (req, res, next) => {
   const { email, username, password } = req.body;
+  console.log(password);
 
   if (!email || !email.trim()) {
-    return next(boom.create(400, 'Email must not be blank'));
+    throw next(boom.create(400, 'Email must not be blank'));
   }
 
   if (!password || password.length < 8) {
-    return next(boom.create(400, 'Password must be at least 8 characters long'));
+    throw next(boom.create(400, 'Password must be at least 8 characters long'));
   }
 
   knex('users')
@@ -102,7 +103,7 @@ router.post('/users', (req, res, next) => {
     .first()
     .then((existingUser) => {
       if (existingUser) {
-        return next(boom.create(400, 'Email already exists'));
+        throw next(boom.create(422, 'Email already exists'));
       }
 
       return bcrypt.hash(password, 12);
@@ -119,7 +120,6 @@ router.post('/users', (req, res, next) => {
         expiresIn: '500 days'
       });
 
-      console.log('here');
       res.cookie('token', token, {
         httpOnly: true,
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 500),
